@@ -48,11 +48,20 @@ export default function AdminPage() {
         if (authed) fetchApplications()
     }, [authed, fetchApplications])
 
-    async function updateStatus(id: string, status: string) {
+    async function updateStatus(id: string, status: string, email: string, brand_name: string) {
         await supabase
             .from('applications')
             .update({ status })
             .eq('id', id)
+
+        if (status === 'approved') {
+            await fetch('/api/invite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, brand_name }),
+            })
+        }
+
         fetchApplications()
     }
 
@@ -128,13 +137,13 @@ export default function AdminPage() {
                                 {app.status === 'pending' && (
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => updateStatus(app.id, 'approved')}
+                                            onClick={() => updateStatus(app.id, 'approved', app.email, app.brand_name)}
                                             className="bg-green-600 hover:bg-green-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
                                         >
                                             Approve
                                         </button>
                                         <button
-                                            onClick={() => updateStatus(app.id, 'rejected')}
+                                            onClick={() => updateStatus(app.id, 'rejected', app.email, app.brand_name)}
                                             className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-medium px-4 py-2 rounded-lg transition"
                                         >
                                             Reject
