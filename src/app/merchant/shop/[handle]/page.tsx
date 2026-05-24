@@ -13,12 +13,17 @@ export default async function StorefrontPage({
 }) {
     const { handle } = await params
 
-    const { data: shop } = await supabase
+    console.log('Storefront handle:', handle)
+
+    const { data: shop, error } = await supabase
         .from('shops')
         .select('*')
         .eq('handle', handle)
         .eq('published', true)
         .single()
+
+    console.log('Shop data:', shop)
+    console.log('Shop error:', error)
 
     if (!shop) return notFound()
 
