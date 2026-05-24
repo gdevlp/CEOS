@@ -13,29 +13,17 @@ export default async function StorefrontPage({
 }) {
     const { handle } = await params
 
-    console.log('Storefront handle:', handle)
-
     const { data: shop, error } = await supabase
         .from('shops')
         .select('*')
         .eq('handle', handle)
-        .eq('published', true)
         .single()
 
-    console.log('Shop data:', shop)
-    console.log('Shop error:', error)
-
-    if (!shop) return notFound()
-
-    if (shop.template === 'bold') {
-        return <BoldTemplate shop={shop} />
-    }
-
-    if (shop.template === 'editorial') {
-        return <EditorialTemplate shop={shop} />
-    }
-
-    return <MinimalTemplate shop={shop} />
+    return (
+        <pre style={{ color: 'white', background: 'black', padding: '20px' }}>
+      {JSON.stringify({ handle, shop, error }, null, 2)}
+    </pre>
+    )
 }
 
 function MinimalTemplate({ shop }: { shop: any }) {
