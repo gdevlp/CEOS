@@ -1,0 +1,83 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+export default function MerchantDashboard() {
+    const [user, setUser] = useState<{ email?: string } | null>(null)
+    const [loading, setLoading] = useState(true)
+
+    const checkUser = useCallback(async () => {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) {
+            window.location.href = '/merchant/login'
+            return
+        }
+        setUser(session.user)
+        setLoading(false)
+    }, [])
+
+    useEffect(() => {
+        checkUser()
+    }, [checkUser])
+
+    async function handleSignOut() {
+        await supabase.auth.signOut()
+        window.location.href = '/merchant/login'
+    }
+
+    if (loading) {
+        return (
+            <main className="min-h-screen bg-black flex items-center justify-center">
+                <p className="text-zinc-500">Loading...</p>
+            </main>
+        )
+    }
+
+    return (
+        <main className="min-h-screen bg-black px-6 py-12">
+            <div className="max-w-4xl mx-auto">
+                <div className="flex items-center justify-between mb-12">
+                    <h1 className="text-2xl font-bold text-white">CEO/$</h1>
+                    <div className="flex items-center gap-4">
+                        <span className="text-zinc-500 text-sm">{user?.email}</span>
+                        <button
+                            onClick={handleSignOut}
+                            className="text-zinc-400 text-sm hover:text-white transition"
+                        >
+                            Sign out
+                        </button>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+                        <p className="text-zinc-500 text-sm mb-1">Total sales</p>
+                        <p className="text-white text-2xl font-bold">$0.00</p>
+                    </div>
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+                        <p className="text-zinc-500 text-sm mb-1">Orders</p>
+                        <p className="text-white text-2xl font-bold">0</p>
+                    </div>
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+                        <p className="text-zinc-500 text-sm mb-1">Products</p>
+                        <p className="text-white text-2xl font-bold">0</p>
+                    </div>
+                </div>
+
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center">
+                    <h2 className="text-white font-semibold text-lg mb-2">Build your shop</h2>
+                    <p className="text-zinc-400 text-sm mb-6">Add your first product to get started.</p>
+                    <button className="bg-white text-black font-semibold px-6 py-3 rounded-lg hover:bg-zinc-200 transition">
+                        Add product
+                    </button>
+                </div>
+            </div>
+        </main>
+    )
+}
