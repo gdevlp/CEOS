@@ -19,9 +19,16 @@ export default function MerchantSetupPage() {
 
     useEffect(() => {
         async function checkSession() {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (session) {
-                setSessionReady(true)
+            const hash = window.location.hash
+            const hasToken = hash.includes('access_token')
+
+            if (!hasToken) {
+                const { data: { session } } = await supabase.auth.getSession()
+                if (session) {
+                    setSessionReady(true)
+                    setChecking(false)
+                    return
+                }
                 setChecking(false)
                 return
             }
@@ -37,7 +44,7 @@ export default function MerchantSetupPage() {
             setTimeout(() => {
                 setChecking(false)
                 subscription.unsubscribe()
-            }, 5000)
+            }, 8000)
         }
 
         checkSession()
