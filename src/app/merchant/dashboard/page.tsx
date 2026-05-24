@@ -80,9 +80,12 @@ export default function MerchantDashboard() {
                         >
                         Build my shop
                     </a>
-                    <button className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition">
+                    <a
+                        href="/merchant/products/new"
+                        className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition"
+                        >
                         Add product
-                    </button>
+                    </a>
                 </div>
                 </div>
             </div>

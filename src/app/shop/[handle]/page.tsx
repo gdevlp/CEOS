@@ -22,18 +22,86 @@ export default async function StorefrontPage({
 
     if (!shop) return notFound()
 
+    const { data: products } = await supabase
+        .from('products')
+        .select('*')
+        .eq('shop_id', shop.id)
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+
     if (shop.template === 'bold') {
-        return <BoldTemplate shop={shop} />
+        return <BoldTemplate shop={shop} products={products || []} />
     }
 
     if (shop.template === 'editorial') {
-        return <EditorialTemplate shop={shop} />
+        return <EditorialTemplate shop={shop} products={products || []} />
     }
 
-    return <MinimalTemplate shop={shop} />
+    return <MinimalTemplate shop={shop} products={products || []} />
 }
 
-function MinimalTemplate({ shop }: { shop: any }) {
+type Product = {
+    id: string
+    name: string
+    description: string
+    price: number
+    image_url: string | null
+    inventory: number
+}
+
+type Shop = {
+    brand_name: string
+    tagline: string
+    primary_color: string
+    template: string
+}
+
+function ProductGrid({ products, primaryColor }: { products: Product[], primaryColor: string }) {
+    if (products.length === 0) {
+        return (
+            <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
+                <p className="text-gray-400">No products yet.</p>
+            </div>
+        )
+    }
+
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map(product => (
+                <div key={product.id} className="group">
+                    <div className="aspect-square bg-gray-100 rounded-xl mb-3 overflow-hidden">
+                        {product.image_url ? (
+                            <img
+                                src={product.image_url}
+                                alt={product.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <p className="text-gray-300 text-sm">No image</p>
+                            </div>
+                        )}
+                    </div>
+                    <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
+                    {product.description && (
+                        <p className="text-gray-400 text-sm mb-2 line-clamp-2">{product.description}</p>
+                    )}
+                    <div className="flex items-center justify-between">
+                        <p className="font-semibold text-gray-900">${product.price.toFixed(2)}</p>
+                        <button
+                            style={{ backgroundColor: primaryColor }}
+                            className="text-white text-sm font-medium px-4 py-2 rounded-lg opacity-90 hover:opacity-100 transition"
+                        >
+                            Add to cart
+                        </button>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+function MinimalTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
     return (
         <main className="min-h-screen bg-white">
             <header className="border-b border-gray-100 px-8 py-6">
@@ -65,15 +133,13 @@ function MinimalTemplate({ shop }: { shop: any }) {
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
         <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest mb-8">Products</h3>
-        <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
-            <p className="text-gray-400">No products yet.</p>
-        </div>
+        <ProductGrid products={products} primaryColor={shop.primary_color} />
     </section>
 </main>
 )
 }
 
-function BoldTemplate({ shop }: { shop: any }) {
+function BoldTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
     return (
         <main className="min-h-screen bg-black">
             <header className="px-8 py-6">
@@ -109,15 +175,47 @@ function BoldTemplate({ shop }: { shop: any }) {
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
         <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-8">Products</h3>
-        <div className="text-center py-16 border border-dashed border-zinc-800 rounded-xl">
-            <p className="text-zinc-600">No products yet.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.length === 0 ? (
+                <div className="col-span-3 text-center py-16 border border-dashed border-zinc-800 rounded-xl">
+                    <p className="text-zinc-600">No products yet.</p>
+                </div>
+            ) : (
+                products.map(product => (
+                    <div key={product.id} className="group">
+                        <div className="aspect-square bg-zinc-900 rounded-xl mb-3 overflow-hidden">
+                            {product.image_url ? (
+                                <img
+                                    src={product.image_url}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                    <p className="text-zinc-700 text-sm">No image</p>
+                                </div>
+                            )}
+                        </div>
+                        <h3 className="font-bold text-white mb-1 uppercase tracking-wide text-sm">{product.name}</h3>
+                        <div className="flex items-center justify-between">
+                            <p className="font-black text-white">${product.price.toFixed(2)}</p>
+                            <button
+                                style={{ backgroundColor: shop.primary_color }}
+                                className="text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wide"
+                            >
+                                Add to cart
+                            </button>
+                        </div>
+                    </div>
+                ))
+            )}
         </div>
     </section>
 </main>
 )
 }
 
-function EditorialTemplate({ shop }: { shop: any }) {
+function EditorialTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
     return (
         <main className="min-h-screen bg-zinc-50">
             <header className="px-8 py-8 border-b border-zinc-200">
@@ -157,9 +255,7 @@ function EditorialTemplate({ shop }: { shop: any }) {
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
         <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest mb-8 text-center">Collection</h3>
-        <div className="text-center py-16 border border-dashed border-zinc-200 rounded-xl">
-            <p className="text-zinc-400">No products yet.</p>
-        </div>
+        <ProductGrid products={products} primaryColor={shop.primary_color} />
     </section>
 </main>
 )
