@@ -1,65 +1,184 @@
-import Image from "next/image";
+import Link from 'next/link'
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+      <main className="min-h-screen bg-black">
+
+        {/* Nav */}
+        <nav className="flex items-center justify-between px-8 py-6 border-b border-zinc-900">
+          <span className="text-white font-bold text-xl tracking-tight">CEO/$</span>
+          <div className="flex items-center gap-6">
+            <Link href="/marketplace" className="text-zinc-400 text-sm hover:text-white transition">
+              Marketplace
+            </Link>
+            <Link href="/merchant/login" className="text-zinc-400 text-sm hover:text-white transition">
+              Sign in
+            </Link>
+            <Link
+                href="/apply"
+                className="bg-white text-black text-sm font-semibold px-5 py-2 rounded-lg hover:bg-zinc-200 transition"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Apply to sell
+            </Link>
+          </div>
+        </nav>
+
+        {/* Hero */}
+        <section className="max-w-6xl mx-auto px-8 pt-24 pb-32">
+          <div className="max-w-3xl">
+            <p className="text-zinc-500 text-sm uppercase tracking-widest mb-6">
+              The independent brand platform
+            </p>
+            <h1 className="text-6xl sm:text-7xl font-black text-white leading-none mb-8">
+              Build your brand.<br />
+              <span className="text-zinc-500">Own your revenue.</span>
+            </h1>
+            <p className="text-zinc-400 text-xl max-w-xl leading-relaxed mb-10">
+              CEO/$ is where independent brands launch, grow, and sell. Apply for access and get your shop live in minutes.
+            </p>
+            <div className="flex items-center gap-4">
+              <Link
+                  href="/apply"
+                  className="bg-white text-black font-bold px-8 py-4 rounded-lg hover:bg-zinc-200 transition text-sm uppercase tracking-wide"
+              >
+                Apply for access
+              </Link>
+              <Link
+                  href="/marketplace"
+                  className="text-zinc-400 text-sm hover:text-white transition flex items-center gap-2"
+              >
+                Browse brands →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats bar */}
+        <section className="border-t border-b border-zinc-900 py-12">
+          <div className="max-w-6xl mx-auto px-8 grid grid-cols-3 gap-8">
+            <div>
+              <p className="text-4xl font-black text-white mb-1">100%</p>
+              <p className="text-zinc-500 text-sm">Independent brands</p>
+            </div>
+            <div>
+              <p className="text-4xl font-black text-white mb-1">3</p>
+              <p className="text-zinc-500 text-sm">Storefront templates</p>
+            </div>
+            <div>
+              <p className="text-4xl font-black text-white mb-1">4%</p>
+              <p className="text-zinc-500 text-sm">Platform fee per sale</p>
+            </div>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section className="max-w-6xl mx-auto px-8 py-24">
+          <p className="text-zinc-500 text-xs uppercase tracking-widest mb-12">How it works</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
+            <div>
+              <p className="text-5xl font-black text-zinc-800 mb-4">01</p>
+              <h3 className="text-white font-semibold text-lg mb-2">Apply</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                Submit your brand for review. We approve selectively to keep the marketplace quality high.
+              </p>
+            </div>
+            <div>
+              <p className="text-5xl font-black text-zinc-800 mb-4">02</p>
+              <h3 className="text-white font-semibold text-lg mb-2">Build</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                Pick a template, add your products, and customize your storefront. Go live in minutes.
+              </p>
+            </div>
+            <div>
+              <p className="text-5xl font-black text-zinc-800 mb-4">03</p>
+              <h3 className="text-white font-semibold text-lg mb-2">Sell</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                Get discovered on the CEO/$ marketplace. Payments go directly to your account.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section className="border-t border-zinc-900 py-24">
+          <div className="max-w-6xl mx-auto px-8">
+            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-12">Pricing</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
+                <h3 className="text-white font-bold text-lg mb-1">Starter</h3>
+                <p className="text-zinc-500 text-sm mb-6">For new brands just getting started</p>
+                <p className="text-4xl font-black text-white mb-6">$20<span className="text-zinc-500 text-base font-normal">/mo</span></p>
+                <ul className="space-y-3 text-sm text-zinc-400">
+                  <li className="flex items-center gap-2">
+                    <span className="text-white">✓</span> Live storefront
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-white">✓</span> Up to 20 products
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-white">✓</span> Marketplace listing
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-white">✓</span> 4% per transaction
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-white rounded-xl p-8">
+                <h3 className="text-black font-bold text-lg mb-1">Growth</h3>
+                <p className="text-zinc-500 text-sm mb-6">For brands ready to scale</p>
+                <p className="text-4xl font-black text-black mb-6">$49<span className="text-zinc-500 text-base font-normal">/mo</span></p>
+                <ul className="space-y-3 text-sm text-zinc-600">
+                  <li className="flex items-center gap-2">
+                    <span className="text-black">✓</span> Everything in Starter
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-black">✓</span> Unlimited products
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-black">✓</span> Priority marketplace placement
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-black">✓</span> Analytics dashboard
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="border-t border-zinc-900 py-24">
+          <div className="max-w-6xl mx-auto px-8 text-center">
+            <h2 className="text-5xl font-black text-white mb-4">Ready to build?</h2>
+            <p className="text-zinc-400 mb-8">Apply for access and get your brand live today.</p>
+            <Link
+                href="/apply"
+                className="inline-block bg-white text-black font-bold px-10 py-4 rounded-lg hover:bg-zinc-200 transition text-sm uppercase tracking-wide"
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+              Apply for access
+            </Link>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="border-t border-zinc-900 px-8 py-8">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <span className="text-zinc-600 text-sm font-bold">CEO/$</span>
+            <div className="flex gap-6">
+              <Link href="/marketplace" className="text-zinc-600 text-sm hover:text-white transition">
+                Marketplace
+              </Link>
+              <Link href="/apply" className="text-zinc-600 text-sm hover:text-white transition">
+                Apply
+              </Link>
+              <Link href="/merchant/login" className="text-zinc-600 text-sm hover:text-white transition">
+                Merchant login
+              </Link>
+            </div>
+          </div>
+        </footer>
+
       </main>
-    </div>
-  );
+  )
 }
