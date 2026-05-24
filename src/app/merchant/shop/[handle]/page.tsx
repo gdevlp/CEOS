@@ -9,12 +9,14 @@ const supabase = createClient(
 export default async function StorefrontPage({
                                                  params,
                                              }: {
-    params: { handle: string }
+    params: Promise<{ handle: string }>
 }) {
+    const { handle } = await params
+
     const { data: shop } = await supabase
         .from('shops')
         .select('*')
-        .eq('handle', params.handle)
+        .eq('handle', handle)
         .eq('published', true)
         .single()
 
