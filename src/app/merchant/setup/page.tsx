@@ -20,31 +20,34 @@ export default function MerchantSetupPage() {
     useEffect(() => {
         async function checkSession() {
             const hash = window.location.hash
-            const hasToken = hash.includes('access_token')
 
-            if (!hasToken) {
-                const { data: { session } } = await supabase.auth.getSession()
-                if (session) {
-                    setSessionReady(true)
-                    setChecking(false)
-                    return
+            if (hash.includes('access_token')) {
+                const params = new URLSearchParams(hash.replace('#', ''))
+                const access_token = params.get('access_token')
+                const refresh_token = params.get('refresh_token')
+
+                if (access_token && refresh_token) {
+                    const { error } = await supabase.auth.setSession({
+                        access_token,
+                        refresh_token,
+                    })
+
+                    if (!error) {
+                        setSessionReady(true)
+                        setChecking(false)
+                        return
+                    }
                 }
+            }
+
+            const { data: { session } } = await supabase.auth.getSession()
+            if (session) {
+                setSessionReady(true)
                 setChecking(false)
                 return
             }
 
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_IN' && session) {
-                    setSessionReady(true)
-                    setChecking(false)
-                    subscription.unsubscribe()
-                }
-            })
-
-            setTimeout(() => {
-                setChecking(false)
-                subscription.unsubscribe()
-            }, 8000)
+            setChecking(false)
         }
 
         checkSession()
