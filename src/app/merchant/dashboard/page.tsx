@@ -18,6 +18,18 @@ export default function MerchantDashboard() {
             window.location.href = '/merchant/login'
             return
         }
+
+        const { data: merchant } = await supabase
+            .from('merchants')
+            .select('plan, stripe_customer_id')
+            .eq('id', session.user.id)
+            .single()
+
+        if (!merchant || !merchant.stripe_customer_id) {
+            window.location.href = '/merchant/subscribe'
+            return
+        }
+
         setUser(session.user)
         setLoading(false)
     }, [])
