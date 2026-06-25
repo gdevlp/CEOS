@@ -26,6 +26,10 @@ export async function POST(request: Request) {
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object as Stripe.Checkout.Session
 
+        console.log('Checkout session mode:', session.mode)
+        console.log('Customer ID:', session.customer)
+        console.log('Subscription ID:', session.subscription)
+
         if (session.mode === 'subscription') {
             const customerId = session.customer as string
             const subscriptionId = session.subscription as string
@@ -33,18 +37,34 @@ export async function POST(request: Request) {
             const subscription = await stripe.subscriptions.retrieve(subscriptionId)
             const priceId = subscription.items.data[0].price.id
 
+            console.log('Price ID from subscription:', priceId)
+            console.log('Starter price env:', process.env.STRIPE_STARTER_PRICE_ID)
+
             const plan = priceId === process.env.STRIPE_STARTER_PRICE_ID ? 'starter' : 'growth'
 
-            await supabaseAdmin
-                .from('merchants')
-                .update({
-                    plan,
-                    stripe_customer_id: customerId,
-                    subscribed_at: new Date().toISOString(),
-                })
-                .eq('stripe_customer_id', customerId)
+            const customerData = await stripe.customers.retrieve(customerId)
+            const supabaseUserId = (customerData as Stripe.Customer).metadata?.supabase_user_id
 
-            console.log('Merchant subscribed:', customerId, plan)
+            console.log('Customer metadata:', (customerData as Stripe.Customer).metadata)
+            console.log('Supabase user ID:', supabaseUserId)
+
+            if (supabaseUserId) {
+                const { error } = await supabaseAdmin
+                    .from('merchants')
+                    .upsert({
+                        id: supabaseUserId,
+                        email: (customerData as Stripe.Customer).email,
+                        stripe_customer_id: customerId,
+                        plan,
+                        subscribed_at: new Date().toISOString(),
+                        status: 'active',
+                    }, { onConflict: 'id' })
+
+                console.log('Upsert error:', error)
+                console.log('Merchant upserted:', supabaseUserId, plan)
+            } else {
+                console.log('No supabase_user_id found in customer metadata')
+            }
         }
     }
 
