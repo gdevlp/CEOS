@@ -11,6 +11,7 @@ const supabase = createClient(
 export default function MerchantDashboard() {
     const [user, setUser] = useState<{ email?: string } | null>(null)
     const [loading, setLoading] = useState(true)
+    const [connectOnboarded, setConnectOnboarded] = useState(false)
 
     const checkUser = useCallback(async () => {
         const { data: { session } } = await supabase.auth.getSession()
@@ -21,7 +22,7 @@ export default function MerchantDashboard() {
 
         const { data: merchant } = await supabase
             .from('merchants')
-            .select('plan, stripe_customer_id')
+            .select('plan, stripe_customer_id, stripe_connect_id, connect_onboarded')
             .eq('id', session.user.id)
             .single()
 
@@ -31,6 +32,7 @@ export default function MerchantDashboard() {
         }
 
         setUser(session.user)
+        setConnectOnboarded(!!merchant.connect_onboarded)
         setLoading(false)
     }, [])
 
@@ -54,6 +56,20 @@ export default function MerchantDashboard() {
     return (
         <main className="min-h-screen bg-black px-6 py-12">
             <div className="max-w-4xl mx-auto">
+                {!connectOnboarded && (
+                    <div className="bg-zinc-900 border border-amber-500 rounded-xl p-4 mb-6 flex items-center justify-between">
+                        <div>
+                            <p className="text-white text-sm font-medium">Connect your bank to start selling</p>
+                            <p className="text-zinc-400 text-xs mt-0.5">You need to connect Stripe before customers can buy from your shop</p>
+                        </div>
+
+                        <a href="/merchant/connect"
+                        className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-zinc-200 transition shrink-0 ml-4"
+                        >
+                        Connect now
+                    </a>
+                    </div>
+                    )}
                 <div className="flex items-center justify-between mb-12">
                     <h1 className="text-2xl font-bold text-white">CEO/$</h1>
                     <div className="flex items-center gap-4">
