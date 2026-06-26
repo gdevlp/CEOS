@@ -80,5 +80,18 @@ export async function POST(request: Request) {
         console.log('Merchant unsubscribed:', customerId)
     }
 
+    if (event.type === 'account.updated') {
+        const account = event.data.object as Stripe.Account
+
+        if (account.details_submitted) {
+            await supabaseAdmin
+                .from('merchants')
+                .update({ connect_onboarded: true })
+                .eq('stripe_connect_id', account.id)
+
+            console.log('Merchant connect onboarded:', account.id)
+        }
+    }
+
     return NextResponse.json({ received: true })
 }
