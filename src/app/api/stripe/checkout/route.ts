@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
         const { data: shop } = await supabaseAdmin
             .from('shops')
-            .select('*, merchants(stripe_connect_id)')
+            .select('*')
             .eq('id', shopId)
             .single()
 
@@ -33,7 +33,13 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Shop not found' }, { status: 404 })
         }
 
-        const merchantConnectId = (shop as { merchants?: { stripe_connect_id?: string } }).merchants?.stripe_connect_id
+        const { data: merchant } = await supabaseAdmin
+            .from('merchants')
+            .select('stripe_connect_id')
+            .eq('id', shop.merchant_id)
+            .single()
+
+        const merchantConnectId = merchant?.stripe_connect_id
         if (!merchantConnectId) {
             return NextResponse.json({ error: 'Merchant not connected to Stripe' }, { status: 400 })
         }
