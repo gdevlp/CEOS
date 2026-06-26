@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
+import BuyButton from '@/components/BuyButton'
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,14 +51,16 @@ type Product = {
 }
 
 type Shop = {
+    id: string
     brand_name: string
     tagline: string
     primary_color: string
     template: string
+    handle: string
+    merchant_id: string
 }
 
-function ProductGrid({ products, primaryColor }: { products: Product[], primaryColor: string }) {
-    if (products.length === 0) {
+function ProductGrid({ products, primaryColor, shopId }: { products: Product[], primaryColor: string, shopId: string }) {    if (products.length === 0) {
         return (
             <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
                 <p className="text-gray-400">No products yet.</p>
@@ -88,12 +91,11 @@ function ProductGrid({ products, primaryColor }: { products: Product[], primaryC
                     )}
                     <div className="flex items-center justify-between">
                         <p className="font-semibold text-gray-900">${product.price.toFixed(2)}</p>
-                        <button
-                            style={{ backgroundColor: primaryColor }}
-                            className="text-white text-sm font-medium px-4 py-2 rounded-lg opacity-90 hover:opacity-100 transition"
-                        >
-                            Add to cart
-                        </button>
+                        <BuyButton
+                            productId={product.id}
+                            shopId={shopId}
+                            primaryColor={primaryColor}
+                        />
                     </div>
                 </div>
             ))}
@@ -133,8 +135,7 @@ function MinimalTemplate({ shop, products }: { shop: Shop, products: Product[] }
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
         <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest mb-8">Products</h3>
-        <ProductGrid products={products} primaryColor={shop.primary_color} />
-    </section>
+        <ProductGrid products={products} primaryColor={shop.primary_color} shopId={shop.id} />    </section>
 </main>
 )
 }
@@ -199,12 +200,12 @@ function BoldTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
                         <h3 className="font-bold text-white mb-1 uppercase tracking-wide text-sm">{product.name}</h3>
                         <div className="flex items-center justify-between">
                             <p className="font-black text-white">${product.price.toFixed(2)}</p>
-                            <button
-                                style={{ backgroundColor: shop.primary_color }}
-                                className="text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wide"
-                            >
-                                Add to cart
-                            </button>
+                            <BuyButton
+                                productId={product.id}
+                                shopId={shop.id}
+                                primaryColor={shop.primary_color}
+                                label="Buy now"
+                            />
                         </div>
                     </div>
                 ))
@@ -255,7 +256,7 @@ function EditorialTemplate({ shop, products }: { shop: Shop, products: Product[]
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
         <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest mb-8 text-center">Collection</h3>
-        <ProductGrid products={products} primaryColor={shop.primary_color} />
+        <ProductGrid products={products} primaryColor={shop.primary_color} shopId={shop.id} />
     </section>
 </main>
 )
