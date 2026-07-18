@@ -10,6 +10,10 @@ const supabaseAdmin = createClient(
 )
 
 export async function POST(request: Request) {
+    console.log('Invite called')
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+    console.log('Service role exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+    console.log('Resend key exists:', !!process.env.RESEND_API_KEY)
     const { email, brand_name } = await request.json()
 
     console.log('Invite route called for:', email)
