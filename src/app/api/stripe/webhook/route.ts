@@ -87,12 +87,16 @@ export async function POST(request: Request) {
     if (event.type === 'account.updated') {
         const account = event.data.object as Stripe.Account
 
+        console.log('account.updated fired for:', account.id)
+        console.log('details_submitted:', account.details_submitted)
+
         if (account.details_submitted) {
-            await supabaseAdmin
+            const { error } = await supabaseAdmin
                 .from('merchants')
                 .update({ connect_onboarded: true })
                 .eq('stripe_connect_id', account.id)
 
+            console.log('Update error:', error)
             console.log('Merchant connect onboarded:', account.id)
         }
     }
