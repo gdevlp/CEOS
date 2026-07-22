@@ -33,6 +33,27 @@ export default function MerchantDashboard() {
 
         setUser(session.user)
         setConnectOnboarded(!!merchant.connect_onboarded)
+
+        if (!merchant.connect_onboarded) {
+            const urlParams = new URLSearchParams(window.location.search)
+            if (urlParams.get('connected') === 'true') {
+                const { data: stripeCheck } = await supabase
+                    .from('merchants')
+                    .select('stripe_connect_id')
+                    .eq('id', session.user.id)
+                    .single()
+
+                if (stripeCheck?.stripe_connect_id) {
+                    await fetch('/api/stripe/check-connect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ connectId: stripeCheck.stripe_connect_id, userId: session.user.id }),
+                    })
+                    setConnectOnboarded(true)
+                }
+            }
+        }
+
         setLoading(false)
     }, [])
 
