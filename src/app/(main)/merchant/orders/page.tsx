@@ -117,7 +117,7 @@ export default function OrdersPage() {
                         <p className="text-zinc-500 text-sm mt-1">{orders.length} total orders</p>
                     </div>
 
-                    <a href="/src/app/(main)/merchant/dashboard"
+                    <a href="//merchant/dashboard"
                     className="text-zinc-400 text-sm hover:text-white transition"
                     >
                     Back to dashboard
