@@ -4,25 +4,6 @@ export default function HomePage() {
   return (
       <main className="min-h-screen bg-black">
 
-        {/* Nav */}
-        <nav className="flex items-center justify-between px-8 py-6 border-b border-zinc-900">
-          <span className="text-white font-bold text-xl tracking-tight">CEO/$</span>
-          <div className="flex items-center gap-6">
-            <Link href="/marketplace" className="text-zinc-400 text-sm hover:text-white transition">
-              Marketplace
-            </Link>
-            <Link href="/merchant/login" className="text-zinc-400 text-sm hover:text-white transition">
-              Sign in
-            </Link>
-            <Link
-                href="/apply"
-                className="bg-white text-black text-sm font-semibold px-5 py-2 rounded-lg hover:bg-zinc-200 transition"
-            >
-              Apply to sell
-            </Link>
-          </div>
-        </nav>
-
         {/* Hero */}
         <section className="max-w-6xl mx-auto px-8 pt-24 pb-32">
           <div className="max-w-3xl">
@@ -160,25 +141,6 @@ export default function HomePage() {
             </Link>
           </div>
         </section>
-
-        {/* Footer */}
-        <footer className="border-t border-zinc-900 px-8 py-8">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <span className="text-zinc-600 text-sm font-bold">CEO/$</span>
-            <div className="flex gap-6">
-              <Link href="/marketplace" className="text-zinc-600 text-sm hover:text-white transition">
-                Marketplace
-              </Link>
-              <Link href="/apply" className="text-zinc-600 text-sm hover:text-white transition">
-                Apply
-              </Link>
-              <Link href="/merchant/login" className="text-zinc-600 text-sm hover:text-white transition">
-                Merchant login
-              </Link>
-            </div>
-          </div>
-        </footer>
-
       </main>
   )
 }
