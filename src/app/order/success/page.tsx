@@ -43,20 +43,41 @@ export default async function OrderSuccessPage({
     const platformFee = Math.round(amount * 0.04 * 100) / 100
 
     if (session.payment_status === 'paid') {
-        await supabase
+        const { data: existingOrder } = await supabase
             .from('orders')
-            .upsert({
-                stripe_session_id: session_id,
-                product_id: productId,
-                shop_id: shopId,
-                merchant_id: merchantId,
-                customer_email: customerEmail,
-                customer_name: customerName,
-                shipping_address: addressString,
-                amount,
-                platform_fee: platformFee,
-                status: 'paid',
-            }, { onConflict: 'stripe_session_id' })
+            .select('id')
+            .eq('stripe_session_id', session_id)
+            .single()
+
+        if (!existingOrder) {
+            await supabase
+                .from('orders')
+                .insert({
+                    stripe_session_id: session_id,
+                    product_id: productId,
+                    shop_id: shopId,
+                    merchant_id: merchantId,
+                    customer_email: customerEmail,
+                    customer_name: customerName,
+                    shipping_address: addressString,
+                    amount,
+                    platform_fee: platformFee,
+                    status: 'paid',
+                })
+
+            await fetch('https://ceos-ten.vercel.app/api/order-notification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    merchantId,
+                    customerName,
+                    customerEmail,
+                    shippingAddress: addressString,
+                    amount,
+                    productId,
+                }),
+            })
+        }
     }
 
     return (
