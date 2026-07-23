@@ -26,7 +26,7 @@ export async function POST(request: Request) {
             type: 'invite',
             email: email,
             options: {
-                redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/setup`,
+                redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}//merchant/setup`,
             }
         })
 

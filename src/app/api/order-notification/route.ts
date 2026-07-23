@@ -61,7 +61,7 @@ export async function POST(request: Request) {
           </div>
 
           <p style="color: #666; font-size: 14px;">Log in to your CEO/$ dashboard to manage this order.</p>
-          <a href="${process.env.NEXT_PUBLIC_APP_URL}/merchant/dashboard" 
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}//merchant/dashboard" 
              style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 16px;">
             View dashboard
           </a>

@@ -35,7 +35,7 @@ export default function Footer() {
                             <Link href="/sign-in" className="block text-zinc-500 text-sm hover:text-white transition">
                                 Sign in
                             </Link>
-                            <Link href="//merchant/dashboard" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/merchant/dashboard" className="block text-zinc-500 text-sm hover:text-white transition">
                                 Merchant dashboard
                             </Link>
                             <Link href="/cart" className="block text-zinc-500 text-sm hover:text-white transition">

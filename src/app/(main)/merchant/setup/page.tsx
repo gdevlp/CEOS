@@ -88,7 +88,7 @@ export default function MerchantSetupPage() {
                     <h1 className="text-3xl font-bold text-white mb-4">You&aposre all set.</h1>
                     <p className="text-zinc-400 mb-8">Your account is ready. Let&aposs build your shop.</p>
                 <a
-                    href="//merchant/dashboard"
+                    href="/merchant/dashboard"
                     className="bg-white text-black font-semibold px-6 py-3 rounded-lg hover:bg-zinc-200 transition"
                     >
                     Go to my dashboard

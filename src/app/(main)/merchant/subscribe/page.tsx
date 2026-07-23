@@ -47,7 +47,7 @@ export default function SubscribePage() {
         async function init() {
             const { data: { session } } = await supabase.auth.getSession()
             if (!session) {
-                window.location.href = '/merchant/login'
+                window.location.href='/merchant/login'
                 return
             }
             setUser(session.user)
@@ -150,7 +150,7 @@ export default function SubscribePage() {
 
                 <p className="text-center text-zinc-600 text-sm mt-8">
                     Already subscribed?{' '}
-                    <a href="//merchant/dashboard" className="text-zinc-400 hover:text-white transition">
+                    <a href="/merchant/dashboard" className="text-zinc-400 hover:text-white transition">
                         Go to dashboard
                     </a>
                 </p>

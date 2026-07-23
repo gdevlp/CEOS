@@ -27,7 +27,7 @@ export default function MerchantLoginPage() {
             return
         }
 
-        window.location.href = '/merchant/dashboard'
+        window.location.href='/merchant/dashboard'
     }
 
     return (

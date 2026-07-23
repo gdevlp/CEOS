@@ -32,8 +32,8 @@ export async function POST(request: Request) {
             mode: 'subscription',
             payment_method_types: ['card'],
             line_items: [{ price: priceId, quantity: 1 }],
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/dashboard?subscribed=true`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/merchant/subscribe`,
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL}//merchant/dashboard?subscribed=true`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}//merchant/subscribe`,
         })
 
         return NextResponse.json({ url: session.url })

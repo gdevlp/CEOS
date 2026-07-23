@@ -18,7 +18,7 @@ export default function ConnectPage() {
         async function init() {
             const { data: { session } } = await supabase.auth.getSession()
             if (!session) {
-                window.location.href = '/merchant/login'
+                window.location.href='/merchant/login'
                 return
             }
             setUser(session.user)
@@ -107,7 +107,7 @@ export default function ConnectPage() {
                 </p>
 
 
-                <a href="//merchant/dashboard"
+                <a href="/merchant/dashboard"
                 className="block text-zinc-600 text-sm hover:text-white transition mt-6"
                 >
                 Skip for now

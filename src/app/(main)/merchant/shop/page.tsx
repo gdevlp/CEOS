@@ -51,7 +51,7 @@ export default function ShopBuilderPage() {
         async function init() {
             const { data: { session } } = await supabase.auth.getSession()
             if (!session) {
-                window.location.href = '/merchant/login'
+                window.location.href='/merchant/login'
                 return
             }
             setUserId(session.user.id)
@@ -119,7 +119,7 @@ export default function ShopBuilderPage() {
                         <p className="text-zinc-500 text-sm mt-1">Customize your public storefront</p>
                     </div>
                 <a
-                    href="//merchant/dashboard"
+                    href="/merchant/dashboard"
                     className="text-zinc-400 text-sm hover:text-white transition"
                     >
                     Back to dashboard
@@ -254,7 +254,7 @@ export default function ShopBuilderPage() {
                                 View shop →
                             </a>
                         <a
-                            href="//merchant/dashboard"
+                            href="/merchant/dashboard"
                             className="text-zinc-400 text-sm hover:text-white transition"
                             >
                             Back to dashboard

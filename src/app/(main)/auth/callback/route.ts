@@ -23,10 +23,10 @@ export async function GET(request: Request) {
         console.log('Verify OTP error:', error)
 
         if (!error) {
-            return NextResponse.redirect(`${origin}/merchant/setup`)
+            return NextResponse.redirect(`${origin}//merchant/setup`)
         }
     }
 
     console.log('Falling back to login')
-    return NextResponse.redirect(`${origin}/merchant/login`)
+    return NextResponse.redirect(`${origin}//merchant/login`)
 }
