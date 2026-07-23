@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import BuyButton from '@/components/BuyButton'
+import CartIcon from '@/components/CartIcon'
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -60,7 +61,8 @@ type Shop = {
     merchant_id: string
 }
 
-function ProductGrid({ products, primaryColor, shopId }: { products: Product[], primaryColor: string, shopId: string }) {    if (products.length === 0) {
+function ProductGrid({ products, primaryColor, shopId, shopHandle, shopName }: { products: Product[], primaryColor: string, shopId: string, shopHandle: string, shopName: string }) {
+    if (products.length === 0) {
         return (
             <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
                 <p className="text-gray-400">No products yet.</p>
@@ -94,6 +96,10 @@ function ProductGrid({ products, primaryColor, shopId }: { products: Product[], 
                         <BuyButton
                             productId={product.id}
                             shopId={shopId}
+                            shopHandle={shopHandle}
+                            shopName={shopName}
+                            productName={product.name}
+                            price={product.price}
                             primaryColor={primaryColor}
                         />
                     </div>
@@ -112,9 +118,10 @@ function MinimalTemplate({ shop, products }: { shop: Shop, products: Product[] }
                         <h1 className="text-xl font-semibold text-gray-900">{shop.brand_name}</h1>
                         {shop.tagline && <p className="text-gray-400 text-sm mt-0.5">{shop.tagline}</p>}
                     </div>
-                    <nav className="flex gap-6 text-sm text-gray-500">
+                    <nav className="flex items-center gap-6 text-sm text-gray-500">
                         <a href="#products" className="hover:text-gray-900 transition">Shop</a>
                         <a href="#about" className="hover:text-gray-900 transition">About</a>
+                        <CartIcon />
                     </nav>
                 </div>
             </header>
@@ -135,7 +142,8 @@ function MinimalTemplate({ shop, products }: { shop: Shop, products: Product[] }
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
         <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest mb-8">Products</h3>
-        <ProductGrid products={products} primaryColor={shop.primary_color} shopId={shop.id} />    </section>
+        <ProductGrid products={products} primaryColor={shop.primary_color} shopId={shop.id} shopHandle={shop.handle} shopName={shop.brand_name} />
+    </section>
 </main>
 )
 }
@@ -146,9 +154,10 @@ function BoldTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
             <header className="px-8 py-6">
                 <div className="max-w-5xl mx-auto flex items-center justify-between">
                     <h1 className="text-xl font-bold text-white tracking-tight">{shop.brand_name}</h1>
-                    <nav className="flex gap-6 text-sm text-zinc-400">
+                    <nav className="flex items-center gap-6 text-sm text-zinc-400">
                         <a href="#products" className="hover:text-white transition">Shop</a>
                         <a href="#about" className="hover:text-white transition">About</a>
+                        <CartIcon />
                     </nav>
                 </div>
             </header>
@@ -203,8 +212,11 @@ function BoldTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
                             <BuyButton
                                 productId={product.id}
                                 shopId={shop.id}
+                                shopHandle={shop.handle}
+                                shopName={shop.brand_name}
+                                productName={product.name}
+                                price={product.price}
                                 primaryColor={shop.primary_color}
-                                label="Buy now"
                             />
                         </div>
                     </div>
@@ -231,11 +243,11 @@ function EditorialTemplate({ shop, products }: { shop: Shop, products: Product[]
                         {shop.tagline && (
                             <p className="text-zinc-400 text-xs tracking-widest uppercase mt-2">{shop.tagline}</p>
                         )}
-                    </div>
-                    <nav className="flex justify-center gap-8 text-xs text-zinc-400 uppercase tracking-widest mt-6">
-                        <a href="#products" className="hover:text-zinc-900 transition">Shop</a>
-                        <a href="#about" className="hover:text-zinc-900 transition">About</a>
-                    </nav>
+                    </div>          <nav className="flex justify-center items-center gap-8 text-xs text-zinc-400 uppercase tracking-widest mt-6">
+                    <a href="#products" className="hover:text-zinc-900 transition">Shop</a>
+                    <a href="#about" className="hover:text-zinc-900 transition">About</a>
+                    <CartIcon />
+                </nav>
                 </div>
             </header>
 
@@ -256,7 +268,7 @@ function EditorialTemplate({ shop, products }: { shop: Shop, products: Product[]
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
         <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest mb-8 text-center">Collection</h3>
-        <ProductGrid products={products} primaryColor={shop.primary_color} shopId={shop.id} />
+        <ProductGrid products={products} primaryColor={shop.primary_color} shopId={shop.id} shopHandle={shop.handle} shopName={shop.brand_name} />
     </section>
 </main>
 )

@@ -1,48 +1,48 @@
 'use client'
 
 import { useState } from 'react'
+import { useCart } from '@/components/CartContext'
 
 export default function BuyButton({
                                       productId,
                                       shopId,
+                                      shopHandle,
+                                      shopName,
+                                      productName,
+                                      price,
                                       primaryColor,
-                                      label = 'Add to cart',
                                   }: {
     productId: string
     shopId: string
+    shopHandle: string
+    shopName: string
+    productName: string
+    price: number
     primaryColor: string
-    label?: string
 }) {
-    const [loading, setLoading] = useState(false)
+    const { addItem } = useCart()
+    const [added, setAdded] = useState(false)
 
-    async function handleBuy() {
-        setLoading(true)
-
-        const res = await fetch('/api/stripe/checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId, shopId }),
+    function handleAddToCart() {
+        addItem({
+            productId,
+            shopId,
+            shopHandle,
+            shopName,
+            name: productName,
+            price,
         })
-
-        const { url, error } = await res.json()
-
-        if (error || !url) {
-            console.error('Checkout error:', error)
-            setLoading(false)
-            return
-        }
-
-        window.location.href = url
+        setAdded(true)
+        setTimeout(() => setAdded(false), 2000)
     }
 
     return (
         <button
-            onClick={handleBuy}
-            disabled={loading}
-            style={{ backgroundColor: primaryColor }}
-            className="text-white text-sm font-medium px-4 py-2 rounded-lg opacity-90 hover:opacity-100 transition disabled:opacity-50"
+            onClick={handleAddToCart}
+            style={{ backgroundColor: added ? '#22c55e' : primaryColor }}
+            className="text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
-            {loading ? 'Loading...' : label}
+            {added ? 'Added ✓' : 'Add to cart'}
         </button>
     )
 }
