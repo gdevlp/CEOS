@@ -12,6 +12,37 @@ export default function MerchantDashboard() {
     const [user, setUser] = useState<{ email?: string } | null>(null)
     const [loading, setLoading] = useState(true)
     const [connectOnboarded, setConnectOnboarded] = useState(false)
+    const [totalSales, setTotalSales] = useState(0)
+    const [totalOrders, setTotalOrders] = useState(0)
+    const [totalProducts, setTotalProducts] = useState(0)
+
+    const loadStats = useCallback(async (userId: string) => {
+        const { data: shop } = await supabase
+            .from('shops')
+            .select('id')
+            .eq('merchant_id', userId)
+            .single()
+
+        if (!shop) return
+
+        const { data: orders } = await supabase
+            .from('orders')
+            .select('amount, status')
+            .eq('shop_id', shop.id)
+            .eq('status', 'paid')
+
+        if (orders) {
+            setTotalOrders(orders.length)
+            setTotalSales(orders.reduce((sum, o) => sum + o.amount, 0))
+        }
+
+        const { count } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('shop_id', shop.id)
+
+        setTotalProducts(count || 0)
+    }, [])
 
     const checkUser = useCallback(async () => {
         const { data: { session } } = await supabase.auth.getSession()
@@ -55,11 +86,12 @@ export default function MerchantDashboard() {
         }
 
         setLoading(false)
+        loadStats(session.user.id)
     }, [])
 
     useEffect(() => {
         checkUser()
-    }, [checkUser])
+    }, [checkUser, loadStats])
 
     async function handleSignOut() {
         await supabase.auth.signOut()
@@ -107,15 +139,15 @@ export default function MerchantDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
                     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
                         <p className="text-zinc-500 text-sm mb-1">Total sales</p>
-                        <p className="text-white text-2xl font-bold">$0.00</p>
+                        <p className="text-white text-2xl font-bold">${totalSales.toFixed(2)}</p>
                     </div>
                     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
                         <p className="text-zinc-500 text-sm mb-1">Orders</p>
-                        <p className="text-white text-2xl font-bold">0</p>
+                        <p className="text-white text-2xl font-bold">{totalOrders}</p>
                     </div>
                     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
                         <p className="text-zinc-500 text-sm mb-1">Products</p>
-                        <p className="text-white text-2xl font-bold">0</p>
+                        <p className="text-white text-2xl font-bold">{totalProducts}</p>
                     </div>
                 </div>
 
