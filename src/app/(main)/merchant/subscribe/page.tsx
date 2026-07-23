@@ -150,7 +150,7 @@ export default function SubscribePage() {
 
                 <p className="text-center text-zinc-600 text-sm mt-8">
                     Already subscribed?{' '}
-                    <a href="/merchant/dashboard" className="text-zinc-400 hover:text-white transition">
+                    <a href="/src/app/(main)/merchant/dashboard" className="text-zinc-400 hover:text-white transition">
                         Go to dashboard
                     </a>
                 </p>

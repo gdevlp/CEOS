@@ -107,7 +107,7 @@ export default function ConnectPage() {
                 </p>
 
 
-                <a href="/merchant/dashboard"
+                <a href="/src/app/(main)/merchant/dashboard"
                 className="block text-zinc-600 text-sm hover:text-white transition mt-6"
                 >
                 Skip for now

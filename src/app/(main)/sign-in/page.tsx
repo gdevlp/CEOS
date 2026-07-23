@@ -19,7 +19,7 @@ export default function SignInPage() {
             <main className="min-h-screen bg-black flex items-center justify-center px-6">
                 <div className="w-full max-w-md">
                     <div className="text-center mb-10">
-                        <Link href="/" className="text-white font-bold text-2xl tracking-tight">
+                        <Link href="/public" className="text-white font-bold text-2xl tracking-tight">
                             CEO/<span className="text-green-500">$</span>
                         </Link>
                         <h1 className="text-2xl font-bold text-white mt-6 mb-2">Welcome back</h1>
@@ -54,7 +54,7 @@ export default function SignInPage() {
         <main className="min-h-screen bg-black flex items-center justify-center px-6">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <Link href="/" className="text-white font-bold text-2xl tracking-tight">
+                    <Link href="/public" className="text-white font-bold text-2xl tracking-tight">
                         CEO/<span className="text-green-500">$</span>
                     </Link>
                     <h1 className="text-2xl font-bold text-white mt-6 mb-2">Sign in</h1>

@@ -119,7 +119,7 @@ export default function ShopBuilderPage() {
                         <p className="text-zinc-500 text-sm mt-1">Customize your public storefront</p>
                     </div>
                 <a
-                    href="/merchant/dashboard"
+                    href="/src/app/(main)/merchant/dashboard"
                     className="text-zinc-400 text-sm hover:text-white transition"
                     >
                     Back to dashboard
@@ -254,7 +254,7 @@ export default function ShopBuilderPage() {
                                 View shop →
                             </a>
                         <a
-                            href="/merchant/dashboard"
+                            href="/src/app/(main)/merchant/dashboard"
                             className="text-zinc-400 text-sm hover:text-white transition"
                             >
                             Back to dashboard

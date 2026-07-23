@@ -115,7 +115,7 @@ export default function NewProductPage() {
                             Add another
                         </button>
                     <a
-                        href="/merchant/dashboard"
+                        href="/src/app/(main)/merchant/dashboard"
                         className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition"
                         >
                         Back to dashboard
@@ -135,7 +135,7 @@ export default function NewProductPage() {
                         <p className="text-zinc-500 text-sm mt-1">Add a new product to your shop</p>
                     </div>
                 <a
-                    href="/merchant/dashboard"
+                    href="/src/app/(main)/merchant/dashboard"
                     className="text-zinc-400 text-sm hover:text-white transition"
                     >
                     Back to dashboard

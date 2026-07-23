@@ -116,7 +116,7 @@ export default function MerchantDashboard() {
                             <p className="text-zinc-400 text-xs mt-0.5">You need to connect Stripe before customers can buy from your shop</p>
                         </div>
 
-                        <a href="/merchant/connect"
+                        <a href="/src/app/(main)/merchant/connect"
                         className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-zinc-200 transition shrink-0 ml-4"
                         >
                         Connect now
@@ -156,19 +156,19 @@ export default function MerchantDashboard() {
                     <p className="text-zinc-400 text-sm mb-6">Add your first product to get started.</p>
                     <div className="flex gap-3 justify-center flex-wrap">
 
-                        <a href="/merchant/shop"
+                        <a href="/src/app/(main)/merchant/shop"
                         className="bg-white text-black font-semibold px-6 py-3 rounded-lg hover:bg-zinc-200 transition"
                         >
                         Build my shop
                     </a>
 
-                    <a href="/merchant/products/new"
+                    <a href="/src/app/(main)/merchant/products/new"
                     className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition"
                     >
                     Add product
                 </a>
 
-                <a href="/merchant/orders"
+                <a href="/src/app/(main)/merchant/orders"
                 className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition"
                 >
                 View orders
