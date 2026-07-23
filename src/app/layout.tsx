@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/components/CartContext";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import { headers } from "next/headers";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -20,11 +21,15 @@ export const metadata: Metadata = {
     description: "The independent brand marketplace",
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
+export default async function RootLayout({
+                                             children,
+                                         }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const headersList = await headers()
+    const pathname = headersList.get('x-pathname') || ''
+    const isStorefront = pathname.startsWith('/shop/')
+
     return (
         <html
             lang="en"
@@ -32,13 +37,13 @@ export default function RootLayout({
         >
         <body className="min-h-full flex flex-col bg-black">
         <CartProvider>
-            <Nav />
+            {!isStorefront && <Nav />}
             <div className="flex-1">
                 {children}
             </div>
-            <Footer />
+            {!isStorefront && <Footer />}
         </CartProvider>
         </body>
         </html>
-    );
+    )
 }
