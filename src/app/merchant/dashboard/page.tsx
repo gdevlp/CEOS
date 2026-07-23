@@ -122,22 +122,28 @@ export default function MerchantDashboard() {
                 <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center">
                     <h2 className="text-white font-semibold text-lg mb-2">Build your shop</h2>
                     <p className="text-zinc-400 text-sm mb-6">Add your first product to get started.</p>
-                    <div className="flex gap-3 justify-center">
-                    <a
-                        href="/merchant/shop"
+                    <div className="flex gap-3 justify-center flex-wrap">
+
+                        <a href="/merchant/shop"
                         className="bg-white text-black font-semibold px-6 py-3 rounded-lg hover:bg-zinc-200 transition"
                         >
                         Build my shop
                     </a>
-                    <a
-                        href="/merchant/products/new"
-                        className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition"
-                        >
-                        Add product
-                    </a>
+
+                    <a href="/merchant/products/new"
+                    className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition"
+                    >
+                    Add product
+                </a>
+
+                <a href="/merchant/orders"
+                className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition"
+                >
+                View orders
+            </a>
+        </div>
                 </div>
                 </div>
-            </div>
         </main>
     )
 }
