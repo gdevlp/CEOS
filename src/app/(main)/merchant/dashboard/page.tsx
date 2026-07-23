@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
@@ -168,11 +169,11 @@ export default function MerchantDashboard() {
                     Add product
                 </a>
 
-                <a href="/src/app/(main)/merchant/orders"
+                <Link href="/src/app/(main)/merchant/orders"
                 className="border border-zinc-700 text-zinc-300 font-semibold px-6 py-3 rounded-lg hover:border-zinc-500 transition"
                 >
                 View orders
-            </a>
+            </Link>
         </div>
                 </div>
                 </div>
