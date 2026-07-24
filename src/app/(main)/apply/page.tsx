@@ -24,7 +24,6 @@ export default function ApplyPage() {
             full_name: (form.elements.namedItem('full_name') as HTMLInputElement).value,
             email: (form.elements.namedItem('email') as HTMLInputElement).value,
             niche: (form.elements.namedItem('niche') as HTMLInputElement).value,
-            social_link: (form.elements.namedItem('social_link') as HTMLInputElement).value,
             status: 'pending',
         }
 
@@ -45,7 +44,7 @@ export default function ApplyPage() {
             <main className="min-h-screen flex items-center justify-center bg-black">
                 <div className="text-center max-w-md px-6">
                     <h1 className="text-3xl font-bold text-white mb-4">Application received.</h1>
-                    <p className="text-zinc-400">We'll review your application and get back to you within 48 hours.</p>
+                    <p className="text-zinc-400">We&apos;ll review your application and get back to you within 48 hours.</p>
                 </div>
             </main>
         )
@@ -55,7 +54,7 @@ export default function ApplyPage() {
         <main className="min-h-screen bg-black flex items-center justify-center px-6">
             <div className="w-full max-w-md">
                 <h1 className="text-3xl font-bold text-white mb-2">Apply to CEO/$</h1>
-                <p className="text-zinc-400 mb-8">Tell us about your brand. We'll be in touch within 48 hours.</p>
+                <p className="text-zinc-400 mb-8">Tell us about your brand. We&apos;ll be in touch within 48 hours.</p>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
@@ -90,13 +89,21 @@ export default function ApplyPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm text-zinc-400 mb-1">Niche / Category</label>
-                        <input
+                        <label className="block text-sm text-zinc-400 mb-1">Niche / category</label>
+                        <select
                             name="niche"
                             required
-                            className="w-full bg-zinc-900 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-white"
-                            placeholder="e.g. streetwear, casual, accessories"
-                        />
+                            className="w-full bg-zinc-900 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-white appearance-none"
+                        >
+                            <option value="">Select a category</option>
+                            <option value="Streetwear">Streetwear</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Art">Art</option>
+                            <option value="Jewelry">Jewelry</option>
+                            <option value="Home">Home</option>
+                            <option value="Beauty">Beauty</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
 
                     <div>

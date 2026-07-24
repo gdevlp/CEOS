@@ -9,7 +9,7 @@ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const NICHES = ['Streetwear', 'Accessories', 'Art', 'Jewelry', 'Home', 'Beauty', 'Other']
+const NICHES = ['Streetwear', 'Casual', 'Sportswear', 'Professional', 'Accessories', 'Other']
 
 type Shop = {
     id: string
