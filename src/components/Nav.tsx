@@ -14,19 +14,19 @@ export default function Nav() {
                 </Link>
 
                 <div className="flex items-center gap-6">
-                    <Link href="/marketplace" className="text-zinc-400 text-sm hover:text-white transition">
+                    <Link href="/marketplace" className="text-zinc-400 text-sm hover:text-green-500 transition">
                         Marketplace
                     </Link>
-                    <Link href="/how-it-works" className="text-zinc-400 text-sm hover:text-white transition">
+                    <Link href="/how-it-works" className="text-zinc-400 text-sm hover:text-green-500 transition">
                         How it works
                     </Link>
-                    <Link href="/apply" className="text-zinc-400 text-sm hover:text-white transition">
+                    <Link href="/apply" className="text-zinc-400 text-sm hover:text-green-500 transition">
                         Apply
                     </Link>
-                    <Link href="/sign-in" className="text-zinc-400 text-sm hover:text-white transition">
+                    <Link href="/sign-in" className="text-zinc-400 text-sm hover:text-green-500 transition">
                         Sign in
                     </Link>
-                    <Link href="/cart" className="relative flex items-center text-zinc-400 hover:text-white transition">
+                    <Link href="/cart" className="relative flex items-center text-zinc-400 hover:text-green-500 transition">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
                             <line x1="3" y1="6" x2="21" y2="6"/>

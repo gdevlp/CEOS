@@ -20,7 +20,7 @@ export default function HomePage() {
             <div className="flex items-center gap-4">
               <Link
                   href="/apply"
-                  className="bg-white text-black font-bold px-8 py-4 rounded-lg hover:bg-zinc-200 transition text-sm uppercase tracking-wide"
+                  className="bg-green-600 hover:bg-green-500 text-white font-bold px-8 py-4 rounded-lg transition text-sm uppercase tracking-wide"
               >
                 Apply for access
               </Link>
@@ -135,7 +135,7 @@ export default function HomePage() {
             <p className="text-zinc-400 mb-8">Apply for access and get your brand live today.</p>
             <Link
                 href="/apply"
-                className="inline-block bg-white text-black font-bold px-10 py-4 rounded-lg hover:bg-zinc-200 transition text-sm uppercase tracking-wide"
+                className="inline-block bg-green-600 hover:bg-green-500 text-white font-bold px-10 py-4 rounded-lg transition text-sm uppercase tracking-wide"
             >
               Apply for access
             </Link>

@@ -17,13 +17,13 @@ export default function Footer() {
                     <div>
                         <p className="text-white text-sm font-semibold mb-4">Platform</p>
                         <div className="space-y-3">
-                            <Link href="/marketplace" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/marketplace" className="block text-zinc-500 text-sm hover:text-green-500 transition">
                                 Marketplace
                             </Link>
-                            <Link href="/how-it-works" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/how-it-works" className="block text-zinc-500 text-sm hover:text-green-500 transition">
                                 How it works
                             </Link>
-                            <Link href="/apply" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/apply" className="block text-zinc-500 text-sm hover:text-green-500 transition">
                                 Apply to sell
                             </Link>
                         </div>
@@ -32,13 +32,13 @@ export default function Footer() {
                     <div>
                         <p className="text-white text-sm font-semibold mb-4">Account</p>
                         <div className="space-y-3">
-                            <Link href="/sign-in" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/sign-in" className="block text-zinc-500 text-sm hover:text-green-500 transition">
                                 Sign in
                             </Link>
-                            <Link href="/merchant/dashboard" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/merchant/dashboard" className="block text-zinc-500 text-sm hover:text-green-500 transition">
                                 Merchant dashboard
                             </Link>
-                            <Link href="/cart" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/cart" className="block text-zinc-500 text-sm hover:text-green-500 transition">
                                 Cart
                             </Link>
                         </div>
@@ -47,10 +47,10 @@ export default function Footer() {
                     <div>
                         <p className="text-white text-sm font-semibold mb-4">Legal</p>
                         <div className="space-y-3">
-                            <Link href="/terms" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/terms" className="block text-zinc-500 text-sm hover:text-green-500 transition">
                                 Terms of service
                             </Link>
-                            <Link href="/privacy" className="block text-zinc-500 text-sm hover:text-white transition">
+                            <Link href="/privacy" className="block text-zinc-500 text-sm hover:text-green-500 transition">
                                 Privacy policy
                             </Link>
                         </div>
