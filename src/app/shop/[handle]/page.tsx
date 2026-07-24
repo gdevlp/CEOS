@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import BuyButton from '@/components/BuyButton'
 import CartIcon from '@/components/CartIcon'
 
@@ -56,12 +58,173 @@ type Shop = {
     brand_name: string
     tagline: string
     primary_color: string
+    secondary_color: string
+    accent_color: string
+    background_color: string
     template: string
     handle: string
     merchant_id: string
+    logo_url: string | null
+    contact_email: string | null
+    social_links: string | null
+    shipping_policy: string | null
+    return_policy: string | null
+    refund_policy: string | null
 }
 
-function ProductGrid({ products, primaryColor, shopId, shopHandle, shopName }: { products: Product[], primaryColor: string, shopId: string, shopHandle: string, shopName: string }) {
+function StorefrontNav({ shop, textColor }: { shop: Shop; textColor: string }) {
+    return (
+        <header style={{ borderBottomColor: `${textColor}20` }} className="border-b px-8 py-5">
+            <div className="max-w-5xl mx-auto flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    {shop.logo_url && (
+                        <Image
+                            src={shop.logo_url}
+                            alt={shop.brand_name}
+                            width={36}
+                            height={36}
+                            className="rounded-lg object-cover"
+                        />
+                    )}
+                    <div>
+                        <h1 style={{ color: textColor }} className="font-semibold text-lg leading-tight">{shop.brand_name}</h1>
+                        {shop.tagline && <p style={{ color: `${textColor}80` }} className="text-xs mt-0.5">{shop.tagline}</p>}
+                    </div>
+                </div>
+                <div className="flex items-center gap-6">
+                    <a href="#products" style={{ color: `${textColor}80` }} className="text-sm hover:opacity-100 transition">Shop</a>
+                    <Link href="/marketplace" style={{ color: `${textColor}80` }} className="text-sm hover:opacity-100 transition">Marketplace</Link>
+                    <div style={{ color: textColor }}>
+                        <CartIcon />
+                    </div>
+                </div>
+            </div>
+        </header>
+    )
+}
+
+function StorefrontFooter({ shop, bgColor, textColor }: { shop: Shop; bgColor: string; textColor: string }) {
+    const links = shop.social_links
+        ? shop.social_links.split(',').map(l => l.trim()).filter(Boolean)
+        : []
+
+    return (
+        <footer style={{ borderTopColor: `${textColor}20`, backgroundColor: bgColor }} className="border-t px-8 py-10 mt-16">
+            <div className="max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+                    {shop.contact_email && (
+                        <div>
+                            <p style={{ color: `${textColor}60` }} className="text-xs uppercase tracking-widest mb-2">Contact</p>
+                            <a href={`mailto:${shop.contact_email}`} style={{ color: textColor }} className="text-sm hover:opacity-80 transition">
+                                {shop.contact_email}
+                            </a>
+                        </div>
+                    )}
+                    {links.length > 0 && (
+                        <div>
+                            <p style={{ color: `${textColor}60` }} className="text-xs uppercase tracking-widest mb-2">Links</p>
+                            <div className="space-y-1">
+                                {links.map((link, i) => (
+
+                                    <a key={i}
+                                    href={link.startsWith('http') ? link : `https://${link}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: textColor }}
+                                    className="block text-sm hover:opacity-80 transition"
+                                    >
+                                {link}
+                                    </a>
+                                    ))}
+                            </div>
+                        </div>
+                        )}
+
+                    <div>
+                        <p style={{ color: `${textColor}60` }} className="text-xs uppercase tracking-widest mb-2">Policies</p>
+                        <div className="space-y-1">
+                            {shop.shipping_policy && (
+                                <button
+                                    style={{ color: textColor }}
+                                    className="block text-sm hover:opacity-80 transition text-left"
+                                    onClick={() => {
+                                        const el = document.getElementById('shipping-policy')
+                                        el?.scrollIntoView({ behavior: 'smooth' })
+                                    }}
+                                >
+                                    Shipping policy
+                                </button>
+                            )}
+                            {shop.return_policy && (
+                                <button
+                                    style={{ color: textColor }}
+                                    className="block text-sm hover:opacity-80 transition text-left"
+                                    onClick={() => {
+                                        const el = document.getElementById('return-policy')
+                                        el?.scrollIntoView({ behavior: 'smooth' })
+                                    }}
+                                >
+                                    Return policy
+                                </button>
+                            )}
+                            {shop.refund_policy && (
+                                <button
+                                    style={{ color: textColor }}
+                                    className="block text-sm hover:opacity-80 transition text-left"
+                                    onClick={() => {
+                                        const el = document.getElementById('refund-policy')
+                                        el?.scrollIntoView({ behavior: 'smooth' })
+                                    }}
+                                >
+                                    Refund policy
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {(shop.shipping_policy || shop.return_policy || shop.refund_policy) && (
+                    <div style={{ borderTopColor: `${textColor}20` }} className="border-t pt-8 space-y-6">
+                        {shop.shipping_policy && (
+                            <div id="shipping-policy">
+                                <p style={{ color: `${textColor}60` }} className="text-xs uppercase tracking-widest mb-2">Shipping policy</p>
+                                <p style={{ color: `${textColor}80` }} className="text-sm leading-relaxed">{shop.shipping_policy}</p>
+                            </div>
+                        )}
+                        {shop.return_policy && (
+                            <div id="return-policy">
+                                <p style={{ color: `${textColor}60` }} className="text-xs uppercase tracking-widest mb-2">Return policy</p>
+                                <p style={{ color: `${textColor}80` }} className="text-sm leading-relaxed">{shop.return_policy}</p>
+                            </div>
+                        )}
+                        {shop.refund_policy && (
+                            <div id="refund-policy">
+                                <p style={{ color: `${textColor}60` }} className="text-xs uppercase tracking-widest mb-2">Refund policy</p>
+                                <p style={{ color: `${textColor}80` }} className="text-sm leading-relaxed">{shop.refund_policy}</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                <div style={{ borderTopColor: `${textColor}20` }} className="border-t pt-6 mt-6 flex items-center justify-between">
+                    <Link href="/marketplace" style={{ color: `${textColor}40` }} className="text-xs hover:opacity-80 transition">
+                        Discover more brands on CEO/$ →
+                    </Link>
+                    <p style={{ color: `${textColor}40` }} className="text-xs">Powered by CEO/$</p>
+                </div>
+            </div>
+        </footer>
+    )
+}
+
+function ProductGrid({ products, primaryColor, accentColor, shopId, shopHandle, shopName }: {
+    products: Product[]
+    primaryColor: string
+    accentColor: string
+    shopId: string
+    shopHandle: string
+    shopName: string
+}) {
     if (products.length === 0) {
         return (
             <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
@@ -76,9 +239,11 @@ function ProductGrid({ products, primaryColor, shopId, shopHandle, shopName }: {
                 <div key={product.id} className="group">
                     <div className="aspect-square bg-gray-100 rounded-xl mb-3 overflow-hidden">
                         {product.image_url ? (
-                            <img
+                            <Image
                                 src={product.image_url}
                                 alt={product.name}
+                                width={400}
+                                height={400}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                         ) : (
@@ -100,7 +265,7 @@ function ProductGrid({ products, primaryColor, shopId, shopHandle, shopName }: {
                             shopName={shopName}
                             productName={product.name}
                             price={product.price}
-                            primaryColor={primaryColor}
+                            primaryColor={accentColor || primaryColor}
                         />
                     </div>
                 </div>
@@ -109,106 +274,102 @@ function ProductGrid({ products, primaryColor, shopId, shopHandle, shopName }: {
     )
 }
 
-function MinimalTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
+function MinimalTemplate({ shop, products }: { shop: Shop; products: Product[] }) {
+    const bg = shop.background_color || '#ffffff'
+    const text = shop.primary_color || '#000000'
+
     return (
-        <main className="min-h-screen bg-white">
-            <header className="border-b border-gray-100 px-8 py-6">
-                <div className="max-w-5xl mx-auto flex items-center justify-between">
-                    <div>
-                        <h1 className="text-xl font-semibold text-gray-900">{shop.brand_name}</h1>
-                        {shop.tagline && <p className="text-gray-400 text-sm mt-0.5">{shop.tagline}</p>}
-                    </div>
-                    <nav className="flex items-center gap-6 text-sm text-gray-500">
-                        <a href="#products" className="hover:text-gray-900 transition">Shop</a>
-                        <a href="#about" className="hover:text-gray-900 transition">About</a>
-                        <CartIcon />
-                    </nav>
-                </div>
-            </header>
+        <div style={{ backgroundColor: bg }}>
+            <StorefrontNav shop={shop} textColor={text} />
 
             <section className="max-w-5xl mx-auto px-8 py-20 text-center">
-                <h2 className="text-4xl font-light text-gray-900 mb-4">{shop.brand_name}</h2>
-                {shop.tagline && <p className="text-gray-500 text-lg">{shop.tagline}</p>}
+                <h2 style={{ color: text }} className="text-4xl font-light mb-4">{shop.brand_name}</h2>
+                {shop.tagline && <p style={{ color: `${text}80` }} className="text-lg">{shop.tagline}</p>}
                 <div className="mt-8">
-                <a
-                    href="#products"
-                    style={{ backgroundColor: shop.primary_color }}
+
+                    <a href="#products"
+                    style={{ backgroundColor: shop.accent_color || shop.primary_color }}
                     className="inline-block text-white font-medium px-8 py-3 rounded-lg transition opacity-90 hover:opacity-100"
                     >
                     Shop now
                 </a>
-            </div>
-        </section>
+        </div>
+</section>
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
-        <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest mb-8">Products</h3>
-        <ProductGrid products={products} primaryColor={shop.primary_color} shopId={shop.id} shopHandle={shop.handle} shopName={shop.brand_name} />
+        <h3 style={{ color: `${text}60` }} className="text-sm font-medium uppercase tracking-widest mb-8">Products</h3>
+        <ProductGrid
+            products={products}
+            primaryColor={shop.primary_color}
+            accentColor={shop.accent_color}
+            shopId={shop.id}
+            shopHandle={shop.handle}
+            shopName={shop.brand_name}
+        />
     </section>
-</main>
+
+    <StorefrontFooter shop={shop} bgColor={bg} textColor={text} />
+</div>
 )
 }
 
-function BoldTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
+function BoldTemplate({ shop, products }: { shop: Shop; products: Product[] }) {
+    const bg = shop.background_color || '#000000'
+    const text = shop.secondary_color || '#ffffff'
+
     return (
-        <main className="min-h-screen bg-black">
-            <header className="px-8 py-6">
-                <div className="max-w-5xl mx-auto flex items-center justify-between">
-                    <h1 className="text-xl font-bold text-white tracking-tight">{shop.brand_name}</h1>
-                    <nav className="flex items-center gap-6 text-sm text-zinc-400">
-                        <a href="#products" className="hover:text-white transition">Shop</a>
-                        <a href="#about" className="hover:text-white transition">About</a>
-                        <CartIcon />
-                    </nav>
-                </div>
-            </header>
+        <div style={{ backgroundColor: bg }}>
+            <StorefrontNav shop={shop} textColor={text} />
 
             <section className="max-w-5xl mx-auto px-8 py-24">
                 <h2
-                    className="text-7xl font-black text-white uppercase leading-none mb-6"
-                    style={{ color: shop.primary_color }}
+                    className="text-7xl font-black uppercase leading-none mb-6"
+                    style={{ color: shop.accent_color || shop.primary_color }}
                 >
                     {shop.brand_name}
                 </h2>
                 {shop.tagline && (
-                    <p className="text-zinc-400 text-xl max-w-lg">{shop.tagline}</p>
+                    <p style={{ color: `${text}80` }} className="text-xl max-w-lg">{shop.tagline}</p>
                 )}
                 <div className="mt-10">
-                <a
-                    href="#products"
-                    style={{ backgroundColor: shop.primary_color }}
+
+                    <a href="#products"
+                    style={{ backgroundColor: shop.accent_color || shop.primary_color }}
                     className="inline-block text-white font-bold px-8 py-4 rounded-lg uppercase tracking-wide text-sm"
                     >
                     Shop now
                 </a>
-            </div>
-        </section>
+        </div>
+</section>
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
-        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-8">Products</h3>
+        <h3 style={{ color: `${text}40` }} className="text-xs font-bold uppercase tracking-widest mb-8">Products</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.length === 0 ? (
                 <div className="col-span-3 text-center py-16 border border-dashed border-zinc-800 rounded-xl">
-                    <p className="text-zinc-600">No products yet.</p>
+                    <p style={{ color: `${text}40` }}>No products yet.</p>
                 </div>
             ) : (
                 products.map(product => (
                     <div key={product.id} className="group">
                         <div className="aspect-square bg-zinc-900 rounded-xl mb-3 overflow-hidden">
                             {product.image_url ? (
-                                <img
+                                <Image
                                     src={product.image_url}
                                     alt={product.name}
+                                    width={400}
+                                    height={400}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                    <p className="text-zinc-700 text-sm">No image</p>
+                                    <p style={{ color: `${text}30` }} className="text-sm">No image</p>
                                 </div>
                             )}
                         </div>
-                        <h3 className="font-bold text-white mb-1 uppercase tracking-wide text-sm">{product.name}</h3>
+                        <h3 style={{ color: text }} className="font-bold mb-1 uppercase tracking-wide text-sm">{product.name}</h3>
                         <div className="flex items-center justify-between">
-                            <p className="font-black text-white">${product.price.toFixed(2)}</p>
+                            <p style={{ color: text }} className="font-black">${product.price.toFixed(2)}</p>
                             <BuyButton
                                 productId={product.id}
                                 shopId={shop.id}
@@ -216,7 +377,7 @@ function BoldTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
                                 shopName={shop.brand_name}
                                 productName={product.name}
                                 price={product.price}
-                                primaryColor={shop.primary_color}
+                                primaryColor={shop.accent_color || shop.primary_color}
                             />
                         </div>
                     </div>
@@ -224,52 +385,48 @@ function BoldTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
             )}
         </div>
     </section>
-</main>
+
+    <StorefrontFooter shop={shop} bgColor={bg} textColor={text} />
+</div>
 )
 }
 
-function EditorialTemplate({ shop, products }: { shop: Shop, products: Product[] }) {
+function EditorialTemplate({ shop, products }: { shop: Shop; products: Product[] }) {
+    const bg = shop.background_color || '#f4f4f5'
+    const text = shop.primary_color || '#000000'
+
     return (
-        <main className="min-h-screen bg-zinc-50">
-            <header className="px-8 py-8 border-b border-zinc-200">
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center">
-                        <h1
-                            className="text-3xl font-serif font-light tracking-widest uppercase"
-                            style={{ color: shop.primary_color }}
-                        >
-                            {shop.brand_name}
-                        </h1>
-                        {shop.tagline && (
-                            <p className="text-zinc-400 text-xs tracking-widest uppercase mt-2">{shop.tagline}</p>
-                        )}
-                    </div>          <nav className="flex justify-center items-center gap-8 text-xs text-zinc-400 uppercase tracking-widest mt-6">
-                    <a href="#products" className="hover:text-zinc-900 transition">Shop</a>
-                    <a href="#about" className="hover:text-zinc-900 transition">About</a>
-                    <CartIcon />
-                </nav>
-                </div>
-            </header>
+        <div style={{ backgroundColor: bg }}>
+            <StorefrontNav shop={shop} textColor={text} />
 
             <section className="max-w-5xl mx-auto px-8 py-24 text-center">
-                <p className="text-xs text-zinc-400 uppercase tracking-widest mb-4">New collection</p>
-                <h2 className="text-5xl font-serif font-light text-zinc-900 mb-6">{shop.brand_name}</h2>
-                {shop.tagline && <p className="text-zinc-500 max-w-md mx-auto">{shop.tagline}</p>}
+                <p style={{ color: `${text}60` }} className="text-xs tracking-widest uppercase mb-4">New collection</p>
+                <h2 style={{ color: text }} className="text-5xl font-serif font-light mb-6">{shop.brand_name}</h2>
+                {shop.tagline && <p style={{ color: `${text}60` }} className="max-w-md mx-auto">{shop.tagline}</p>}
                 <div className="mt-10">
-                <a
-                    href="#products"
-                    style={{ borderColor: shop.primary_color, color: shop.primary_color }}
+
+                    <a href="#products"
+                    style={{ borderColor: shop.accent_color || shop.primary_color, color: shop.accent_color || shop.primary_color }}
                     className="inline-block border font-medium px-8 py-3 tracking-widest text-xs uppercase"
                     >
                     Explore
                 </a>
-            </div>
-        </section>
+        </div>
+</section>
 
     <section id="products" className="max-w-5xl mx-auto px-8 py-12">
-        <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest mb-8 text-center">Collection</h3>
-        <ProductGrid products={products} primaryColor={shop.primary_color} shopId={shop.id} shopHandle={shop.handle} shopName={shop.brand_name} />
+        <h3 style={{ color: `${text}60` }} className="text-xs font-medium uppercase tracking-widest mb-8 text-center">Collection</h3>
+        <ProductGrid
+            products={products}
+            primaryColor={shop.primary_color}
+            accentColor={shop.accent_color}
+            shopId={shop.id}
+            shopHandle={shop.handle}
+            shopName={shop.brand_name}
+        />
     </section>
-</main>
+
+    <StorefrontFooter shop={shop} bgColor={bg} textColor={text} />
+</div>
 )
 }

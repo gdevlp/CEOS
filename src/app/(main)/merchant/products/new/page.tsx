@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import { UploadButton } from '@/lib/uploadthing'
+import Image from 'next/image'
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,12 +16,12 @@ export default function NewProductPage() {
     const [saving, setSaving] = useState(false)
     const [saved, setSaved] = useState(false)
     const [error, setError] = useState('')
-
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [price, setPrice] = useState('')
     const [inventory, setInventory] = useState('')
     const [published, setPublished] = useState(true)
+    const [imageUrl, setImageUrl] = useState('')
 
     const loadShop = useCallback(async (userId: string) => {
         const { data } = await supabase
@@ -74,6 +76,7 @@ export default function NewProductPage() {
                 description: description.trim(),
                 price: parseFloat(price),
                 inventory: parseInt(inventory) || 0,
+                image_url: imageUrl || null,
                 published,
             }])
 
@@ -164,6 +167,26 @@ export default function NewProductPage() {
                             rows={4}
                             className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-white resize-none"
                             placeholder="Describe your product..."
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm text-zinc-400 mb-2">Product image</label>
+                        {imageUrl && (
+                            <div className="mb-3">
+                                <Image src={imageUrl} alt="Product" width={120} height={120} className="rounded-lg object-cover" />
+                            </div>
+                        )}
+                        <UploadButton
+                            endpoint="productImageUploader"
+                            onClientUploadComplete={(res) => {
+                                if (res?.[0]?.url) setImageUrl(res[0].url)
+                            }}
+                            onUploadError={(error) => console.error(error)}
+                            appearance={{
+                                button: 'bg-zinc-800 border border-zinc-700 text-white text-sm px-4 py-2 rounded-lg hover:border-green-500 transition ut-uploading:opacity-50',
+                                allowedContent: 'text-zinc-600 text-xs mt-1',
+                            }}
                         />
                     </div>
 
