@@ -106,16 +106,6 @@ export default function ApplyPage() {
                         </select>
                     </div>
 
-                    <div>
-                        <label className="block text-sm text-zinc-400 mb-1">Social Link or Website</label>
-                        <input
-                            name="social_link"
-                            required
-                            className="w-full bg-zinc-900 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-white"
-                            placeholder="instagram.com/yourbrand"
-                        />
-                    </div>
-
                     {error && <p className="text-red-400 text-sm">{error}</p>}
 
                     <button
