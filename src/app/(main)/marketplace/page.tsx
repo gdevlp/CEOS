@@ -19,6 +19,7 @@ type Shop = {
     primary_color: string
     niche: string
     template: string
+    logo_url: string | null
 }
 
 export default function MarketplacePage() {
@@ -200,10 +201,18 @@ export default function MarketplacePage() {
                                             (e.currentTarget as HTMLElement).style.borderColor = ''
                                         }}
                                     >
-                                        <div
-                                            className="w-10 h-10 rounded-lg mb-4"
-                                            style={{ backgroundColor: shop.primary_color }}
-                                        />
+                                        {shop.logo_url ? (
+                                            <img
+                                                src={shop.logo_url}
+                                                alt={shop.brand_name}
+                                                className="w-10 h-10 rounded-lg object-cover mb-4"
+                                            />
+                                        ) : (
+                                            <div
+                                                className="w-10 h-10 rounded-lg mb-4"
+                                                style={{ backgroundColor: shop.primary_color }}
+                                            />
+                                        )}
                                         <h2
                                             className="text-white font-semibold text-lg mb-1 transition"
                                             style={{ '--accent': shop.primary_color } as React.CSSProperties}
