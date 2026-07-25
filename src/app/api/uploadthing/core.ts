@@ -8,7 +8,7 @@ export const ourFileRouter = {
             return {}
         })
         .onUploadComplete(async ({ file }) => {
-            return { url: file.url }
+            return { url: file.ufsUrl }
         }),
 
     productImageUploader: f({ image: { maxFileSize: '4MB', maxFileCount: 5 } })
@@ -16,7 +16,7 @@ export const ourFileRouter = {
             return {}
         })
         .onUploadComplete(async ({ file }) => {
-            return { url: file.url }
+            return { url: file.ufsUrl }
         }),
 } satisfies FileRouter
 
