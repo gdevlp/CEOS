@@ -20,6 +20,10 @@ type Shop = {
     niche: string
     template: string
     logo_url: string | null
+    logo_bg_color: string | null
+    card_hover_color: string | null
+    card_bg_color: string | null
+    card_banner_url: string | null
 }
 
 export default function MarketplacePage() {
@@ -190,45 +194,51 @@ export default function MarketplacePage() {
                                     <Link
                                         key={shop.id}
                                         href={`/shop/${shop.handle}`}
-                                        className="group bg-zinc-900 border border-zinc-800 rounded-xl p-6 transition"
+                                        className="group rounded-xl overflow-hidden transition border border-zinc-800"
                                         style={{
-                                            '--accent': shop.primary_color,
-                                        } as React.CSSProperties}
+                                            backgroundColor: shop.card_bg_color || '#18181b',
+                                        }}
                                         onMouseEnter={e => {
-                                            (e.currentTarget as HTMLElement).style.borderColor = shop.primary_color
+                                            (e.currentTarget as HTMLElement).style.borderColor = shop.card_hover_color || shop.primary_color
                                         }}
                                         onMouseLeave={e => {
-                                            (e.currentTarget as HTMLElement).style.borderColor = ''
+                                            (e.currentTarget as HTMLElement).style.borderColor = '#27272a'
                                         }}
                                     >
-                                        {shop.logo_url ? (
-                                            <img
-                                                src={shop.logo_url}
-                                                alt={shop.brand_name}
-                                                className="w-10 h-10 rounded-lg object-contain mb-4 bg-white p-0.5"
-                                            />
-                                        ) : (
-                                            <div
-                                                className="w-10 h-10 rounded-lg mb-4"
-                                                style={{ backgroundColor: shop.primary_color }}
-                                            />
+                                        {shop.card_banner_url && (
+                                            <div className="h-24 overflow-hidden">
+                                                <img
+                                                    src={shop.card_banner_url}
+                                                    alt={shop.brand_name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
                                         )}
-                                        <h2
-                                            className="text-white font-semibold text-lg mb-1 transition"
-                                            style={{ '--accent': shop.primary_color } as React.CSSProperties}
-                                            onMouseEnter={e => {
-                                                const parent = (e.currentTarget as HTMLElement).closest('a')
-                                                if (parent) (e.currentTarget as HTMLElement).style.color = shop.primary_color
-                                            }}
-                                        >
-                                            {shop.brand_name}
-                                        </h2>
-                                        {shop.tagline && (
-                                            <p className="text-zinc-500 text-sm line-clamp-2">{shop.tagline}</p>
-                                        )}
-                                        <p className="text-zinc-700 text-xs mt-4 uppercase tracking-widest">
-                                            {shop.niche || shop.template}
-                                        </p>
+                                        <div className="p-6">
+                                            {shop.logo_url ? (
+                                                <div
+                                                    className="w-10 h-10 mb-4 flex items-center justify-center rounded-lg overflow-hidden"
+                                                    style={{ backgroundColor: shop.logo_bg_color && shop.logo_bg_color !== 'transparent' ? shop.logo_bg_color : 'transparent' }}
+                                                >
+                                                    <img
+                                                        src={shop.logo_url}
+                                                        alt={shop.brand_name}
+                                                        className="w-full h-full object-contain"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="w-10 h-10 rounded-lg mb-4"
+                                                    style={{ backgroundColor: shop.primary_color }}
+                                                />
+                                            )}
+                                            <h2 className="text-white font-semibold text-lg mb-1">
+                                                {shop.brand_name}
+                                            </h2>
+                                            {shop.tagline && (
+                                                <p className="text-zinc-500 text-sm line-clamp-2">{shop.tagline}</p>
+                                            )}
+                                        </div>
                                     </Link>
                                 ))}
                             </div>

@@ -53,6 +53,10 @@ export default function ShopBuilderPage() {
     const [returnPolicy, setReturnPolicy] = useState('')
     const [refundPolicy, setRefundPolicy] = useState('')
     const [published, setPublished] = useState(false)
+    const [logoBgColor, setLogoBgColor] = useState('transparent')
+    const [cardHoverColor, setCardHoverColor] = useState('#16a34a')
+    const [cardBgColor, setCardBgColor] = useState('#18181b')
+    const [cardBannerUrl, setCardBannerUrl] = useState('')
 
     const loadShop = useCallback(async (uid: string) => {
         const { data } = await supabase
@@ -77,6 +81,10 @@ export default function ShopBuilderPage() {
             setReturnPolicy(data.return_policy || '')
             setRefundPolicy(data.refund_policy || '')
             setPublished(data.published || false)
+            setLogoBgColor(data.logo_bg_color || 'transparent')
+            setCardHoverColor(data.card_hover_color || '#16a34a')
+            setCardBgColor(data.card_bg_color || '#18181b')
+            setCardBannerUrl(data.card_banner_url || '')
         }
 
         setLoading(false)
@@ -133,6 +141,10 @@ export default function ShopBuilderPage() {
                 return_policy: returnPolicy,
                 refund_policy: refundPolicy,
                 published,
+                logo_bg_color: logoBgColor,
+                card_hover_color: cardHoverColor,
+                card_bg_color: cardBgColor,
+                card_banner_url: cardBannerUrl,
             }, { onConflict: 'merchant_id' })
 
         if (error) {
@@ -195,30 +207,19 @@ export default function ShopBuilderPage() {
                                 />
                             </div>
                         </div>
-
-                        <div>
-                            <label className="block text-sm text-zinc-400 mb-1">
-                                Tagline <span className="text-zinc-600 text-xs">(optional)</span>
-                            </label>
-                            <input
-                                value={tagline}
-                                onChange={e => setTagline(e.target.value)}
-                                className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
-                                placeholder="A short description of your brand"
-                            />
-                            <p className="text-zinc-600 text-xs mt-1">Appears under your brand name on the storefront header.</p>
-                        </div>
-
                         <div>
                             <label className="block text-sm text-zinc-400 mb-2">Logo</label>
                             {logoUrl && (
                                 <div className="mb-3">
-                                    <Image src={logoUrl} alt="Logo" width={80} height={80} className="rounded-lg object-contain bg-white p-1" />                                </div>
+                                    <div className="w-20 h-20 rounded-lg p-1 flex items-center justify-center overflow-hidden" style={{ backgroundColor: logoBgColor === 'transparent' ? 'transparent' : logoBgColor }}>
+                                        <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                                    </div>
+                                </div>
                             )}
                             <UploadButton
                                 endpoint="logoUploader"
                                 onClientUploadComplete={(res) => {
-                                    if (res?.[0]?.url) setLogoUrl(res[0].url)
+                                    if (res?.[0]?.ufsUrl) setLogoUrl(res[0].ufsUrl)
                                 }}
                                 onUploadError={(error) => setError(error.message)}
                                 appearance={{
@@ -226,6 +227,27 @@ export default function ShopBuilderPage() {
                                     allowedContent: 'text-zinc-600 text-xs mt-1',
                                 }}
                             />
+                            <p className="text-zinc-600 text-xs mt-2">
+                                Tip: For best results upload a PNG with a transparent background.
+                            </p>
+                            <div className="mt-3">
+                                <label className="block text-sm text-zinc-400 mb-2">Logo background color</label>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setLogoBgColor('transparent')}
+                                        className={`px-3 py-1.5 rounded-lg text-xs border transition ${logoBgColor === 'transparent' ? 'border-green-500 text-green-500' : 'border-zinc-700 text-zinc-400 hover:border-zinc-500'}`}
+                                    >
+                                        Transparent
+                                    </button>
+                                    <input
+                                        type="color"
+                                        value={logoBgColor === 'transparent' ? '#ffffff' : logoBgColor}
+                                        onChange={e => setLogoBgColor(e.target.value)}
+                                        className="w-8 h-8 rounded border border-zinc-700 bg-zinc-800 cursor-pointer"
+                                    />
+                                    <span className="text-zinc-600 text-xs">{logoBgColor}</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div>
@@ -253,6 +275,74 @@ export default function ShopBuilderPage() {
                             <p className="text-zinc-600 text-xs mt-1">Comma separated links shown in your shop footer.</p>
                         </div>
                     </div>
+
+                    {/* Marketplace card */}
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-5">
+                        <h2 className="text-white font-semibold">Marketplace card</h2>
+                        <p className="text-zinc-500 text-xs">Customize how your brand appears on the CEO/$ marketplace.</p>
+
+                        <div>
+                            <label className="block text-sm text-zinc-400 mb-2">Card background color</label>
+                            <div className="flex items-center gap-3">
+                                <input
+                                    type="color"
+                                    value={cardBgColor}
+                                    onChange={e => setCardBgColor(e.target.value)}
+                                    className="w-10 h-10 rounded-lg border border-zinc-700 bg-zinc-800 cursor-pointer"
+                                />
+                                <span className="text-zinc-400 text-xs font-mono">{cardBgColor}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm text-zinc-400 mb-2">Card hover color</label>
+                            <p className="text-zinc-600 text-xs mb-2">Border color when someone hovers over your card</p>
+                            <div className="flex items-center gap-3">
+                                <input
+                                    type="color"
+                                    value={cardHoverColor}
+                                    onChange={e => setCardHoverColor(e.target.value)}
+                                    className="w-10 h-10 rounded-lg border border-zinc-700 bg-zinc-800 cursor-pointer"
+                                />
+                                <span className="text-zinc-400 text-xs font-mono">{cardHoverColor}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm text-zinc-400 mb-2">
+                                Card banner image <span className="text-zinc-600 text-xs">(optional)</span>
+                            </label>
+                            <p className="text-zinc-600 text-xs mb-3">Replaces the card background with an image. Recommended size: 400x200px.</p>
+                            {cardBannerUrl && (
+                                <div className="mb-3 rounded-lg overflow-hidden h-24">
+                                    <img src={cardBannerUrl} alt="Card banner" className="w-full h-full object-cover" />
+                                </div>
+                            )}
+                            <UploadButton
+                                endpoint="logoUploader"
+                                onClientUploadComplete={(res) => {
+                                    if (res?.[0]?.ufsUrl) setCardBannerUrl(res[0].ufsUrl)
+                                }}
+                                onUploadError={(error) => setError(error.message)}
+                                appearance={{
+                                    button: 'bg-zinc-800 border border-zinc-700 text-white text-sm px-4 py-2 rounded-lg hover:border-green-500 transition ut-uploading:opacity-50',
+                                    allowedContent: 'text-zinc-600 text-xs mt-1',
+                                }}
+                            />
+                            {cardBannerUrl && (
+                                <button
+                                    onClick={() => setCardBannerUrl('')}
+                                    className="text-zinc-600 text-xs hover:text-red-400 transition mt-2 block"
+                                >
+                                    Remove banner
+                                </button>
+                            )}
+                            <p className="text-zinc-600 text-xs mt-2">
+                                Tip: For best results upload a PNG with a transparent background.
+                            </p>
+                        </div>
+                    </div>
+
 
                     {/* Template */}
                     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-5">

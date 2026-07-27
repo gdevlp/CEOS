@@ -78,13 +78,15 @@ function StorefrontNav({ shop, textColor }: { shop: Shop; textColor: string }) {
             <div className="max-w-5xl mx-auto flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     {shop.logo_url && (
-                        <Image
-                            src={shop.logo_url}
-                            alt={shop.brand_name}
-                            width={36}
-                            height={36}
-                            className="rounded-lg object-contain bg-white p-0.5"
-                        />
+                        <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                            <img
+                                src={shop.logo_url}
+                                alt={shop.brand_name}
+                                width={32}
+                                height={32}
+                                className="object-contain"
+                            />
+                        </div>
                     )}
                     <div>
                         <h1 style={{ color: textColor }} className="font-semibold text-lg leading-tight">{shop.brand_name}</h1>
