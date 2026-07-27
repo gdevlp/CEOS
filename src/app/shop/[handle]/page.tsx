@@ -83,7 +83,7 @@ function StorefrontNav({ shop, textColor }: { shop: Shop; textColor: string }) {
                             alt={shop.brand_name}
                             width={36}
                             height={36}
-                            className="rounded-lg object-cover"
+                            className="rounded-lg object-contain bg-white p-0.5"
                         />
                     )}
                     <div>

@@ -205,7 +205,7 @@ export default function MarketplacePage() {
                                             <img
                                                 src={shop.logo_url}
                                                 alt={shop.brand_name}
-                                                className="w-10 h-10 rounded-lg object-cover mb-4"
+                                                className="w-10 h-10 rounded-lg object-contain mb-4 bg-white p-0.5"
                                             />
                                         ) : (
                                             <div

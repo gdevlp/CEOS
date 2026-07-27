@@ -213,8 +213,7 @@ export default function ShopBuilderPage() {
                             <label className="block text-sm text-zinc-400 mb-2">Logo</label>
                             {logoUrl && (
                                 <div className="mb-3">
-                                    <Image src={logoUrl} alt="Logo" width={80} height={80} className="rounded-lg object-cover" />
-                                </div>
+                                    <Image src={logoUrl} alt="Logo" width={80} height={80} className="rounded-lg object-contain bg-white p-1" />                                </div>
                             )}
                             <UploadButton
                                 endpoint="logoUploader"
