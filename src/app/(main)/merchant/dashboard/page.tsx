@@ -14,8 +14,17 @@ export default function MerchantDashboard() {
     const [loading, setLoading] = useState(true)
     const [connectOnboarded, setConnectOnboarded] = useState(false)
     const [totalSales, setTotalSales] = useState(0)
-    const [totalOrders, setTotalOrders] = useState(0)
     const [totalProducts, setTotalProducts] = useState(0)
+    const [totalOrdersReceived, setTotalOrdersReceived] = useState(0)
+    const [orderStats, setOrderStats] = useState({
+        received: 0,
+        confirmed: 0,
+        shipped: 0,
+        delivered: 0,
+        refunded: 0,
+        returned: 0,
+        newOrders: 0,
+    })
     const [shopHandle, setShopHandle] = useState<string | null>(null)
     const [plan, setPlan] = useState<string>('none')
 
@@ -32,13 +41,31 @@ export default function MerchantDashboard() {
 
         const { data: orders } = await supabase
             .from('orders')
-            .select('amount, status')
+            .select('amount, status, created_at')
             .eq('shop_id', shop.id)
-            .eq('status', 'paid')
 
         if (orders) {
-            setTotalOrders(orders.length)
-            setTotalSales(orders.reduce((sum, o) => sum + o.amount, 0))
+            const paid = orders.filter(o => o.status === 'paid')
+            const confirmed = orders.filter(o => o.status === 'confirmed')
+            const shipped = orders.filter(o => o.status === 'shipped')
+            const delivered = orders.filter(o => o.status === 'delivered')
+            const refunded = orders.filter(o => o.status === 'refunded')
+            const returned = orders.filter(o => o.status === 'returned')
+
+            const totalRevenue = [...paid, ...confirmed, ...shipped, ...delivered]
+                .reduce((sum, o) => sum + o.amount, 0)
+
+            setTotalOrdersReceived(orders.length)
+            setTotalSales(totalRevenue)
+            setOrderStats({
+                received: paid.length,
+                confirmed: confirmed.length,
+                shipped: shipped.length,
+                delivered: delivered.length,
+                refunded: refunded.length,
+                returned: returned.length,
+                newOrders: paid.length,
+            })
         }
 
         const { count } = await supabase
@@ -155,18 +182,47 @@ export default function MerchantDashboard() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-                        <p className="text-zinc-500 text-xs uppercase tracking-widest mb-2">Total sales</p>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
+                        <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3">Total sales</p>
                         <p className="text-white text-3xl font-black">${totalSales.toFixed(2)}</p>
+                        <p className="text-zinc-600 text-xs mt-1">All time</p>
                     </div>
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-                        <p className="text-zinc-500 text-xs uppercase tracking-widest mb-2">Orders</p>
-                        <p className="text-white text-3xl font-black">{totalOrders}</p>
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
+                        <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3">Total orders</p>
+                        <p className="text-white text-3xl font-black">{totalOrdersReceived}</p>
+                        <p className="text-zinc-600 text-xs mt-1">All time</p>
                     </div>
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-                        <p className="text-zinc-500 text-xs uppercase tracking-widest mb-2">Products</p>
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
+                        <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3">Products</p>
                         <p className="text-white text-3xl font-black">{totalProducts}</p>
+                    </div>
+                </div>
+
+                {/* Order status breakdown */}
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                        <p className="text-zinc-500 text-xs uppercase tracking-widest">Order status</p>
+                        {orderStats.newOrders > 0 && (
+                            <span className="bg-yellow-900 text-yellow-400 text-xs font-medium px-2 py-0.5 rounded-full">
+                {orderStats.newOrders} awaiting confirmation
+              </span>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+                        {[
+                            { label: 'New', count: orderStats.newOrders, color: 'text-yellow-400' },
+                            { label: 'Confirmed', count: orderStats.confirmed, color: 'text-blue-400' },
+                            { label: 'Shipped', count: orderStats.shipped, color: 'text-green-400' },
+                            { label: 'Delivered', count: orderStats.delivered, color: 'text-zinc-400' },
+                            { label: 'Refunded', count: orderStats.refunded, color: 'text-red-400' },
+                            { label: 'Returned', count: orderStats.returned, color: 'text-orange-400' },
+                        ].map(stat => (
+                            <div key={stat.label} className="text-center">
+                                <p className={`text-2xl font-black ${stat.color}`}>{stat.count}</p>
+                                <p className="text-zinc-600 text-xs mt-1">{stat.label}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
