@@ -7,9 +7,7 @@ export default function HomePage() {
         {/* Hero */}
         <section className="max-w-6xl mx-auto px-8 pt-24 pb-32 flex flex-col items-center text-center">
           <div className="max-w-3xl">
-            <h1 className="text-6xl sm:text-7xl font-black text-white leading-none mb-8">
-              Grow your brand.<br />
-              <span className="text-zinc-500">Own the future.</span>
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-none mb-8">              <span className="text-zinc-500">Own the future.</span>
             </h1>
             <p className="text-zinc-400 text-xl max-w-xl leading-relaxed mb-10">
               CEO/$ is the platform where any brand — new or established — claims their storefront, builds their aesthetic, and sells on their terms.
@@ -122,7 +120,7 @@ export default function HomePage() {
 
         {/* CTA */}
         <section className="max-w-6xl mx-auto px-8 py-24 flex flex-col items-center text-center">
-          <h2 className="text-5xl sm:text-6xl font-black text-white mb-4">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white mb-4">
             Ready to build?
           </h2>
           <p className="text-zinc-400 text-lg mb-10 max-w-lg">
