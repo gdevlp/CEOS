@@ -22,25 +22,24 @@ export default function ApplyPage() {
 
         const emailValue = (form.elements.namedItem('email') as HTMLInputElement).value
 
-        const { data: existingApp } = await supabase
+        const { data: existingApps } = await supabase
             .from('applications')
             .select('id')
             .eq('email', emailValue)
-            .single()
+            .eq('status', 'pending')
 
-        if (existingApp) {
+        if (existingApps && existingApps.length > 0) {
             setError('You already have a pending application with this email. We\'ll be in touch within 48 hours.')
             setLoading(false)
             return
         }
 
-        const { data: existingMerchant } = await supabase
+        const { data: existingMerchants } = await supabase
             .from('merchants')
             .select('id')
             .eq('email', emailValue)
-            .single()
 
-        if (existingMerchant) {
+        if (existingMerchants && existingMerchants.length > 0) {
             setError('This email already has a CEO/$ merchant account. Sign in to access your dashboard.')
             setLoading(false)
             return
