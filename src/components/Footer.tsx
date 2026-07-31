@@ -2,36 +2,67 @@ import Link from 'next/link'
 
 export default function Footer() {
     return (
-        <footer className="border-t border-zinc-900 bg-black px-6 py-8 mt-auto">
+        <footer className="border-t border-zinc-900 bg-black px-6 py-12 mt-auto">
             <div className="max-w-6xl mx-auto">
-                <div className="flex flex-wrap items-center justify-between gap-6">
-                    <Link href="/" className="text-white font-bold text-xl tracking-tight shrink-0">
-                        CEO/<span className="text-green-500">$</span>
-                    </Link>
-
-                    <div className="flex flex-wrap gap-6">
-                        <Link href="/marketplace" className="text-zinc-500 text-sm hover:text-green-500 transition">
-                            Marketplace
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-12">
+                    <div className="col-span-2 sm:col-span-1">
+                        <Link href="/" className="text-white font-bold text-xl tracking-tight">
+                            CEO/<span className="text-green-500">$</span>
                         </Link>
-                        <Link href="/how-it-works" className="text-zinc-500 text-sm hover:text-green-500 transition">
-                            How it works
-                        </Link>
-                        <Link href="/apply" className="text-zinc-500 text-sm hover:text-green-500 transition">
-                            Apply
-                        </Link>
-                        <Link href="/sign-in" className="text-zinc-500 text-sm hover:text-green-500 transition">
-                            Sign in
-                        </Link>
-                        <Link href="/terms" className="text-zinc-500 text-sm hover:text-green-500 transition">
-                            Terms
-                        </Link>
-                        <Link href="/privacy" className="text-zinc-500 text-sm hover:text-green-500 transition">
-                            Privacy
-                        </Link>
+                        <p className="text-zinc-500 text-sm mt-3 leading-relaxed">
+                            The platform where brands launch, grow, and sell on their terms.
+                        </p>
                     </div>
 
+                    <div>
+                        <p className="text-white text-sm font-semibold mb-4">Platform</p>
+                        <div className="space-y-3">
+                            <Link href="/marketplace" className="block text-zinc-500 text-sm hover:text-green-500 transition">
+                                Marketplace
+                            </Link>
+                            <Link href="/how-it-works" className="block text-zinc-500 text-sm hover:text-green-500 transition">
+                                How it works
+                            </Link>
+                            <Link href="/apply" className="block text-zinc-500 text-sm hover:text-green-500 transition">
+                                Apply to sell
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p className="text-white text-sm font-semibold mb-4">Account</p>
+                        <div className="space-y-3">
+                            <Link href="/sign-in" className="block text-zinc-500 text-sm hover:text-green-500 transition">
+                                Sign in
+                            </Link>
+                            <Link href="/merchant/dashboard" className="block text-zinc-500 text-sm hover:text-green-500 transition">
+                                Merchant dashboard
+                            </Link>
+                            <Link href="/cart" className="block text-zinc-500 text-sm hover:text-green-500 transition">
+                                Cart
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p className="text-white text-sm font-semibold mb-4">Legal</p>
+                        <div className="space-y-3">
+                            <Link href="/terms" className="block text-zinc-500 text-sm hover:text-green-500 transition">
+                                Terms of service
+                            </Link>
+                            <Link href="/privacy" className="block text-zinc-500 text-sm hover:text-green-500 transition">
+                                Privacy policy
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border-t border-zinc-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="text-zinc-600 text-xs">
-                        © {new Date().getFullYear()} CEO/$
+                        © {new Date().getFullYear()} CEO/$. All rights reserved.
+                    </p>
+                    <p className="text-zinc-600 text-xs">
+                        Built for brands that mean business.
                     </p>
                 </div>
             </div>
