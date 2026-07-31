@@ -97,12 +97,12 @@ export default function MarketplacePage() {
                 scrolled ? 'py-3' : 'py-6'
             }`}>
                 <div className="max-w-6xl mx-auto px-6 flex flex-col gap-3">
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 flex-wrap sm:flex-nowrap">
                         <input
                             value={q}
                             onChange={e => setQ(e.target.value)}
                             placeholder="Search brands..."
-                            className={`flex-1 bg-zinc-900 border border-zinc-800 text-white rounded-lg px-4 text-sm focus:outline-none focus:border-green-500 transition-all ${
+                            className={`flex-1 min-w-0 bg-zinc-900 border border-zinc-800 text-white rounded-lg px-4 text-sm focus:outline-none focus:border-green-500 transition-all ${
                                 scrolled ? 'py-2' : 'py-2.5'
                             }`}
                         />

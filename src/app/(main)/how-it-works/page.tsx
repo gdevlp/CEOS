@@ -8,7 +8,7 @@ export default function HowItWorksPage() {
             <section className="border-b border-zinc-900 px-6 py-16">
                 <div className="max-w-4xl mx-auto">
                     <p className="text-green-500 text-l uppercase tracking-widest mb-4">How it works</p>
-                    <h1 className="text-5xl font-black text-white mb-4">
+                    <h1 className="text-3xl sm:text-5xl font-black text-white mb-4">
                         Built for the brands.<br />Built for the buyers.
                     </h1>
                     <p className="text-zinc-400 text-lg max-w-xl">

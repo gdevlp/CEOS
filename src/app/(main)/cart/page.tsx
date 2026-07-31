@@ -146,7 +146,7 @@ export default function CartPage() {
                     ))}
                 </div>
 
-                <div className="mt-8 pt-8 border-t border-zinc-800 flex items-center justify-between">
+                <div className="mt-8 pt-8 border-t border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <p className="text-zinc-500 text-sm">Total across all shops</p>
                         <p className="text-white font-bold text-2xl">

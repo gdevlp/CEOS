@@ -26,8 +26,7 @@ export default function SignInPage() {
                         <p className="text-zinc-400">How are you using CEO/$?</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <button
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">                        <button
                             onClick={() => setRole('shopper')}
                             className="bg-zinc-900 border border-zinc-800 hover:border-green-500 rounded-xl p-6 text-left transition group"
                         >

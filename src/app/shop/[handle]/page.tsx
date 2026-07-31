@@ -74,7 +74,7 @@ type Shop = {
 
 function StorefrontNav({ shop, textColor }: { shop: Shop; textColor: string }) {
     return (
-        <header style={{ borderBottomColor: `${textColor}20` }} className="border-b px-8 py-5">
+        <header style={{ borderBottomColor: `${textColor}20` }} className="border-b px-4 sm:px-8 py-5">
             <div className="max-w-5xl mx-auto flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     {shop.logo_url && (

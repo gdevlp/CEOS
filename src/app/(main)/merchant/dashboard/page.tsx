@@ -200,7 +200,7 @@ export default function MerchantDashboard() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
                         <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3">Total sales</p>
                         <p className="text-white text-3xl font-black">${totalSales.toFixed(2)}</p>
