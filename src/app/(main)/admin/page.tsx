@@ -19,6 +19,25 @@ type Application = {
     created_at: string
 }
 
+type Ticket = {
+    id: string
+    user_id: string
+    user_type: string
+    email: string
+    subject: string
+    status: string
+    created_at: string
+    messages?: TicketMessage[]
+}
+
+type TicketMessage = {
+    id: string
+    ticket_id: string
+    from_admin: boolean
+    body: string
+    created_at: string
+}
+
 type Merchant = {
     id: string
     email: string
@@ -46,6 +65,13 @@ export default function AdminPage() {
     const [merchants, setMerchants] = useState<Merchant[]>([])
     const [loading, setLoading] = useState(false)
 
+    const [tickets, setTickets] = useState<Ticket[]>([])
+    const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null)
+    const [ticketMessages, setTicketMessages] = useState<TicketMessage[]>([])
+    const [ticketReply, setTicketReply] = useState('')
+    const [ticketStatus, setTicketStatus] = useState('')
+    const [sendingReply, setSendingReply] = useState(false)
+
     const [messageModal, setMessageModal] = useState<{ merchantId: string; email: string; name: string } | null>(null)
     const [messageSubject, setMessageSubject] = useState('')
     const [messageBody, setMessageBody] = useState('')
@@ -68,6 +94,14 @@ export default function AdminPage() {
             .eq('status', 'rejected')
             .order('created_at', { ascending: false })
         setRejected(data || [])
+    }, [])
+
+    const fetchTickets = useCallback(async () => {
+        const { data } = await supabase
+            .from('tickets')
+            .select('*')
+            .order('created_at', { ascending: false })
+        setTickets(data || [])
     }, [])
 
     const fetchMerchants = useCallback(async () => {
@@ -94,10 +128,10 @@ export default function AdminPage() {
     useEffect(() => {
         if (authed) {
             setLoading(true)
-            Promise.all([fetchApplications(), fetchRejected(), fetchMerchants()])
+            Promise.all([fetchApplications(), fetchRejected(), fetchMerchants(), fetchTickets()])
                 .finally(() => setLoading(false))
         }
-    }, [authed, fetchApplications, fetchRejected, fetchMerchants])
+    }, [authed, fetchApplications, fetchRejected, fetchMerchants, fetchTickets])
 
     function handleLogin() {
         if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
@@ -204,6 +238,7 @@ export default function AdminPage() {
                     {[
                         { key: 'applications', label: 'Applications', count: applications.length },
                         { key: 'merchants', label: 'Merchants', count: merchants.length },
+                        { key: 'tickets', label: 'Support', count: tickets.filter(t => t.status === 'open').length },
                         { key: 'rejected', label: 'Rejected', count: rejected.length },
                     ].map(tab => (
                         <button
@@ -339,6 +374,174 @@ export default function AdminPage() {
                         ))}
                     </div>
                     )}
+
+                {/* Tickets tab */}
+                {activeTab === 'tickets' && (
+                    <div>
+                        {!selectedTicket ? (
+                            <div className="space-y-3">
+                                {tickets.length === 0 && !loading && (
+                                    <p className="text-zinc-600">No support tickets yet.</p>
+                                )}
+                                {tickets.map(ticket => (
+                                    <button
+                                        key={ticket.id}
+                                        onClick={async () => {
+                                            setSelectedTicket(ticket)
+                                            setTicketStatus(ticket.status)
+                                            const { data } = await supabase
+                                                .from('ticket_messages')
+                                                .select('*')
+                                                .eq('ticket_id', ticket.id)
+                                                .order('created_at', { ascending: true })
+                                            setTicketMessages(data || [])
+                                        }}
+                                        className="w-full text-left bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-xl p-5 transition"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                              ticket.user_type === 'merchant' ? 'bg-blue-900 text-blue-400' : 'bg-purple-900 text-purple-400'
+                          }`}>
+                            {ticket.user_type}
+                          </span>
+                                                    <p className="text-white text-sm font-medium">{ticket.subject}</p>
+                                                </div>
+                                                <p className="text-zinc-500 text-xs">{ticket.email}</p>
+                                                <p className="text-zinc-600 text-xs mt-1">
+                                                    {new Date(ticket.created_at).toLocaleDateString('en-US', {
+                                                        month: 'short', day: 'numeric', year: 'numeric'
+                                                    })}
+                                                </p>
+                                            </div>
+                                            <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${
+                                                ticket.status === 'open' ? 'bg-yellow-900 text-yellow-400' :
+                                                    ticket.status === 'in_progress' ? 'bg-blue-900 text-blue-400' :
+                                                        ticket.status === 'resolved' ? 'bg-green-900 text-green-400' :
+                                                            'bg-zinc-800 text-zinc-500'
+                                            }`}>
+                        {ticket.status.replace('_', ' ')}
+                      </span>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div>
+                                <button
+                                    onClick={() => { setSelectedTicket(null); setTicketMessages([]) }}
+                                    className="text-zinc-400 text-sm hover:text-white transition mb-6 flex items-center gap-2"
+                                >
+                                    ← Back to tickets
+                                </button>
+
+                                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mb-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h2 className="text-white font-semibold">{selectedTicket.subject}</h2>
+                                        <select
+                                            value={ticketStatus}
+                                            onChange={async e => {
+                                                setTicketStatus(e.target.value)
+                                                await fetch('/api/tickets/reply', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({
+                                                        ticketId: selectedTicket.id,
+                                                        body: '',
+                                                        fromAdmin: true,
+                                                        status: e.target.value,
+                                                    }),
+                                                })
+                                                fetchTickets()
+                                            }}
+                                            className="bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-green-500"
+                                        >
+                                            <option value="open">Open</option>
+                                            <option value="in_progress">In progress</option>
+                                            <option value="resolved">Resolved</option>
+                                            <option value="closed">Closed</option>
+                                        </select>
+                                    </div>
+                                    <p className="text-zinc-500 text-xs mb-4">{selectedTicket.email} · {selectedTicket.user_type}</p>
+
+                                    <div className="space-y-4">
+                                        {ticketMessages.map(msg => (
+                                            <div key={msg.id} className={`flex ${msg.from_admin ? 'justify-end' : 'justify-start'}`}>
+                                                <div className={`max-w-sm rounded-xl px-4 py-3 ${
+                                                    msg.from_admin ? 'bg-green-600 text-white' : 'bg-zinc-800 text-white'
+                                                }`}>
+                                                    <p className="text-xs opacity-60 mb-1">{msg.from_admin ? 'CEO/$ Support' : selectedTicket.email}</p>
+                                                    <p className="text-sm leading-relaxed">{msg.body}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {ticketStatus !== 'closed' && (
+                                    <div className="flex gap-3">
+                                        <input
+                                            value={ticketReply}
+                                            onChange={e => setTicketReply(e.target.value)}
+                                            className="flex-1 bg-zinc-900 border border-zinc-800 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 text-sm"
+                                            placeholder="Reply as CEO/$ support..."
+                                            onKeyDown={e => {
+                                                if (e.key === 'Enter' && ticketReply.trim()) {
+                                                    setSendingReply(true)
+                                                    fetch('/api/tickets/reply', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({
+                                                            ticketId: selectedTicket.id,
+                                                            body: ticketReply,
+                                                            fromAdmin: true,
+                                                        }),
+                                                    }).then(() => {
+                                                        setTicketReply('')
+                                                        supabase
+                                                            .from('ticket_messages')
+                                                            .select('*')
+                                                            .eq('ticket_id', selectedTicket.id)
+                                                            .order('created_at', { ascending: true })
+                                                            .then(({ data }) => setTicketMessages(data || []))
+                                                        setSendingReply(false)
+                                                    })
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            disabled={sendingReply || !ticketReply.trim()}
+                                            onClick={async () => {
+                                                setSendingReply(true)
+                                                await fetch('/api/tickets/reply', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({
+                                                        ticketId: selectedTicket.id,
+                                                        body: ticketReply,
+                                                        fromAdmin: true,
+                                                    }),
+                                                })
+                                                setTicketReply('')
+                                                const { data } = await supabase
+                                                    .from('ticket_messages')
+                                                    .select('*')
+                                                    .eq('ticket_id', selectedTicket.id)
+                                                    .order('created_at', { ascending: true })
+                                                setTicketMessages(data || [])
+                                                setSendingReply(false)
+                                            }}
+                                            className="bg-green-600 hover:bg-green-500 text-white font-semibold px-4 py-3 rounded-lg transition disabled:opacity-50"
+                                        >
+                                            {sendingReply ? 'Sending...' : 'Reply'}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Rejected tab */}
                 {activeTab === 'rejected' && (

@@ -152,6 +152,7 @@ export default function ShopperAccountPage() {
                     {[
                         { key: 'orders', label: 'Orders', count: orders.length },
                         { key: 'account', label: 'Account' },
+                        { key: 'support', label: 'Support' },
                     ].map(tab => (
                         <button
                             key={tab.key}
@@ -282,6 +283,20 @@ export default function ShopperAccountPage() {
                                 Sign out
                             </button>
                         </div>
+                    </div>
+                )}
+
+                {/* Support tab */}
+                {activeTab === 'support' && (
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center">
+                        <h2 className="text-white font-semibold mb-2">Need help?</h2>
+                        <p className="text-zinc-400 text-sm mb-6">Submit a support ticket and we&apos;ll get back to you.</p>
+                        <Link
+                            href="/shopper/support"
+                            className="bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-3 rounded-lg transition inline-block"
+                        >
+                            Go to support
+                        </Link>
                     </div>
                 )}
             </div>
