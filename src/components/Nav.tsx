@@ -2,11 +2,70 @@
 
 import Link from 'next/link'
 import { useCart } from '@/components/CartContext'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default function Nav() {
     const { totalItems } = useCart()
     const [menuOpen, setMenuOpen] = useState(false)
+    const [user, setUser] = useState<{ email?: string } | null>(null)
+    const [userType, setUserType] = useState<'merchant' | 'shopper' | null>(null)
+
+    useEffect(() => {
+        async function checkUser() {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return
+
+            setUser(session.user)
+
+            const { data: merchant } = await supabase
+                .from('merchants')
+                .select('id')
+                .eq('id', session.user.id)
+                .single()
+
+            if (merchant) {
+                setUserType('merchant')
+                return
+            }
+
+            const { data: shopper } = await supabase
+                .from('shoppers')
+                .select('id')
+                .eq('auth_id', session.user.id)
+                .single()
+
+            if (shopper) {
+                setUserType('shopper')
+            }
+        }
+
+        checkUser()
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (!session) {
+                setUser(null)
+                setUserType(null)
+            } else {
+                checkUser()
+            }
+        })
+
+        return () => subscription.unsubscribe()
+    }, [])
+
+    const accountHref = userType === 'merchant'
+        ? '/merchant/dashboard'
+        : userType === 'shopper'
+            ? '/shopper/account'
+            : '/sign-in'
+
+    const accountLabel = user ? 'Account' : 'Sign in'
 
     return (
         <nav className="border-b border-zinc-900 bg-black px-6 py-4 sticky top-0 z-50">
@@ -26,9 +85,19 @@ export default function Nav() {
                     <Link href="/apply" className="text-zinc-400 text-sm hover:text-green-500 transition">
                         Apply
                     </Link>
-                    <Link href="/sign-in" className="text-zinc-400 text-sm hover:text-green-500 transition">
-                        Sign in
+
+                    {/* Account icon on desktop */}
+                    <Link href={accountHref} className="text-zinc-400 hover:text-green-500 transition flex items-center gap-1.5">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        {user && (
+                            <span className="w-2 h-2 rounded-full bg-green-500" />
+                        )}
                     </Link>
+
+                    {/* Cart */}
                     <Link href="/cart" className="relative flex items-center text-zinc-400 hover:text-green-500 transition">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -104,11 +173,12 @@ export default function Nav() {
                         Apply
                     </Link>
                     <Link
-                        href="/sign-in"
+                        href={accountHref}
                         onClick={() => setMenuOpen(false)}
-                        className="block px-2 py-3 text-zinc-400 text-sm hover:text-green-500 transition"
+                        className="flex items-center gap-2 px-2 py-3 text-zinc-400 text-sm hover:text-green-500 transition"
                     >
-                        Sign in
+                        {accountLabel}
+                        {user && <span className="w-2 h-2 rounded-full bg-green-500" />}
                     </Link>
                 </div>
             )}
