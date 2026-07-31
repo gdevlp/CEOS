@@ -28,6 +28,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true })
     } catch (error) {
         console.log('Message error:', error)
-        return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
+        return NextResponse.json({ error: 'Failed to send messages' }, { status: 500 })
     }
 }

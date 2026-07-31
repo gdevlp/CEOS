@@ -415,7 +415,7 @@ export default function AdminPage() {
                                     disabled={sendingMessage || !messageSubject.trim() || !messageBody.trim()}
                                     className="flex-1 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50"
                                 >
-                                    {sendingMessage ? 'Sending...' : 'Send message'}
+                                    {sendingMessage ? 'Sending...' : 'Send messages'}
                                 </button>
                                 <button
                                     onClick={() => setMessageModal(null)}
