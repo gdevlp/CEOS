@@ -54,30 +54,37 @@ export default function SignInPage() {
         <main className="min-h-screen bg-black flex items-center justify-center px-6">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <Link href="/public" className="text-white font-bold text-2xl tracking-tight">
+                    <Link href="/" className="text-white font-bold text-2xl tracking-tight">
                         CEO/<span className="text-green-500">$</span>
                     </Link>
-                    <h1 className="text-2xl font-bold text-white mt-6 mb-2">Sign in</h1>
-                    <p className="text-zinc-400">Access your shopper account</p>
+                    <h1 className="text-2xl font-bold text-white mt-6 mb-2">Sign in as shopper</h1>
+                    <p className="text-zinc-400">Access your orders and account</p>
                 </div>
 
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
-                    <p className="text-zinc-400 text-sm text-center mb-6">
-                        Shopper accounts are coming soon. You can still browse and checkout as a guest.
-                    </p>
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 space-y-4">
                     <Link
-                        href="/marketplace"
+                        href="/shopper/login"
                         className="block w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg transition text-center"
                     >
-                        Browse marketplace
+                        Sign in
+                    </Link>
+                    <Link
+                        href="/shopper/signup"
+                        className="block w-full border border-zinc-700 text-zinc-300 font-semibold py-3 rounded-lg hover:border-green-500 hover:text-green-500 transition text-center"
+                    >
+                        Create account
                     </Link>
                     <button
                         onClick={() => setRole(null)}
-                        className="block w-full text-zinc-500 text-sm hover:text-white transition text-center mt-4"
+                        className="block w-full text-zinc-500 text-sm hover:text-white transition text-center"
                     >
                         Back
                     </button>
                 </div>
+
+                <p className="text-center text-zinc-600 text-xs mt-6">
+                    You can also browse and checkout as a guest — no account needed.
+                </p>
             </div>
         </main>
     )
