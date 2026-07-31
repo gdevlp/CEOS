@@ -51,12 +51,27 @@ export default function ShopperSupportPage() {
     useEffect(() => {
         async function init() {
             const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                window.location.href = '/shopper/login'
+            if (session) {
+                setUser(session.user)
+                loadTickets(session.user.id)
                 return
             }
-            setUser(session.user)
-            loadTickets(session.user.id)
+
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                if (session) {
+                    setUser(session.user)
+                    loadTickets(session.user.id)
+                    subscription.unsubscribe()
+                } else {
+                    window.location.href = '/shopper/login'
+                    subscription.unsubscribe()
+                }
+            })
+
+            setTimeout(() => {
+                subscription.unsubscribe()
+                setLoading(false)
+            }, 3000)
         }
         init()
     }, [loadTickets])

@@ -99,12 +99,27 @@ export default function ShopperAccountPage() {
     useEffect(() => {
         async function init() {
             const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                window.location.href = '/shopper/login'
+            if (session) {
+                setUser(session.user)
+                loadData(session.user.id, session.user.email || '')
                 return
             }
-            setUser(session.user)
-            loadData(session.user.id, session.user.email || '')
+
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                if (session) {
+                    setUser(session.user)
+                    loadData(session.user.id, session.user.email || '')
+                    subscription.unsubscribe()
+                } else {
+                    window.location.href = '/shopper/login'
+                    subscription.unsubscribe()
+                }
+            })
+
+            setTimeout(() => {
+                subscription.unsubscribe()
+                setLoading(false)
+            }, 3000)
         }
         init()
     }, [loadData])
