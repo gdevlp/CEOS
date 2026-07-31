@@ -40,7 +40,11 @@ export default function Nav() {
                 .eq('auth_id', session.user.id)
                 .single()
 
+            console.log('Shopper check:', shopper, session.user.id)
+
             if (shopper) {
+                setUserType('shopper')
+            } else {
                 setUserType('shopper')
             }
         }
