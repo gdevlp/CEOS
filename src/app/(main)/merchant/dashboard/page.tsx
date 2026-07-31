@@ -276,6 +276,19 @@ export default function MerchantDashboard() {
                                 </div>
                                 <span className="text-zinc-600 group-hover:text-green-500 transition text-lg">→</span>
                             </Link>
+
+                            <Link
+                                href="/merchant/messages"
+                                className="flex items-center justify-between p-4 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div>
+                                        <p className="text-white text-sm font-medium">Messages</p>
+                                        <p className="text-zinc-500 text-xs mt-0.5">Messages from CEO/$</p>
+                                    </div>
+                                </div>
+                                <span className="text-zinc-600 group-hover:text-green-500 transition text-lg">→</span>
+                            </Link>
                         </div>
                     </div>
 
