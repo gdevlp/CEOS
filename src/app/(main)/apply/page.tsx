@@ -19,6 +19,33 @@ export default function ApplyPage() {
         setError('')
 
         const form = e.currentTarget
+
+        const emailValue = (form.elements.namedItem('email') as HTMLInputElement).value
+
+        const { data: existingApp } = await supabase
+            .from('applications')
+            .select('id')
+            .eq('email', emailValue)
+            .single()
+
+        if (existingApp) {
+            setError('You already have a pending application with this email. We\'ll be in touch within 48 hours.')
+            setLoading(false)
+            return
+        }
+
+        const { data: existingMerchant } = await supabase
+            .from('merchants')
+            .select('id')
+            .eq('email', emailValue)
+            .single()
+
+        if (existingMerchant) {
+            setError('This email already has a CEO/$ merchant account. Sign in to access your dashboard.')
+            setLoading(false)
+            return
+        }
+
         const data = {
             brand_name: (form.elements.namedItem('brand_name') as HTMLInputElement).value,
             full_name: (form.elements.namedItem('full_name') as HTMLInputElement).value,
@@ -97,22 +124,29 @@ export default function ApplyPage() {
                         >
                             <option value="">Select a category</option>
                             <option value="Streetwear">Streetwear</option>
+                            <option value="Casual">Casual</option>
+                            <option value="Sportswear">Sportswear</option>
+                            <option value="Professional">Professional</option>
                             <option value="Accessories">Accessories</option>
-                            <option value="Art">Art</option>
-                            <option value="Jewelry">Jewelry</option>
-                            <option value="Home">Home</option>
-                            <option value="Beauty">Beauty</option>
                             <option value="Other">Other</option>
                         </select>
                     </div>
 
-                    {error && <p className="text-red-400 text-sm">{error}</p>}
+                    {error && (
+                        <div>
+                            <p className="text-red-400 text-sm">{error}</p>
+                            {error.includes('merchant account') && (
+                                <a href="/merchant/login" className="text-green-500 text-sm hover:text-green-400 transition mt-1 block">
+                                    Sign in →
+                                </a>
+                            )}
+                        </div>
+                    )}
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-white text-black font-semibold rounded-lg py-3 hover:bg-zinc-200 transition disabled:opacity-50"
-                    >
+                        className="w-full bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg py-3 transition disabled:opacity-50"                    >
                         {loading ? 'Submitting...' : 'Submit application'}
                     </button>
                 </form>

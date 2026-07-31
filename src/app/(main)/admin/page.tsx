@@ -14,7 +14,7 @@ type Application = {
     full_name: string
     email: string
     niche: string
-    social_link: string
+    social_link: string | null
     status: string
     created_at: string
 }
@@ -55,11 +55,21 @@ export default function AdminPage() {
             .eq('id', id)
 
         if (status === 'approved') {
-            await fetch('/api/invite', {
+            const res = await fetch('/api/invite', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, brand_name }),
             })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                if (res.status === 409) {
+                    alert(`This email (${email}) already has an account on CEO/$. The application has been approved but no invite was sent.`)
+                } else {
+                    alert(`Approved but invite failed: ${data.error}`)
+                }
+            }
         }
 
         fetchApplications()
@@ -108,22 +118,24 @@ export default function AdminPage() {
                                     <h2 className="text-white font-semibold text-lg">{app.brand_name}</h2>
                                     <p className="text-zinc-400 text-sm">{app.full_name} · {app.email}</p>
                                     <p className="text-zinc-400 text-sm">Niche: {app.niche}</p>
-                                <a
-                                    href={app.social_link.startsWith('http') ? app.social_link : `https://${app.social_link}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-zinc-500 text-sm hover:text-white transition block"
-                                    >
-                                    {app.social_link}
-                                </a>
-                                <p className="text-zinc-600 text-xs mt-2">
-                                    {new Date(app.created_at).toLocaleDateString('en-US', {
-                                        month: 'short', day: 'numeric', year: 'numeric'
-                                    })}
-                                </p>
-                            </div>
+                                    {app.social_link && (
 
-                            <div className="flex flex-col gap-2 shrink-0">
+                                        <a href={app.social_link.startsWith('http') ? app.social_link : `https://${app.social_link}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-zinc-500 text-sm hover:text-white transition block"
+                                        >
+                                    {app.social_link}
+                                        </a>
+                                        )}
+                                    <p className="text-zinc-600 text-xs mt-2">
+                                        {new Date(app.created_at).toLocaleDateString('en-US', {
+                                            month: 'short', day: 'numeric', year: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-col gap-2 shrink-0">
                   <span className={`text-xs font-medium px-3 py-1 rounded-full text-center ${
                       app.status === 'approved'
                           ? 'bg-green-900 text-green-400'
@@ -134,24 +146,24 @@ export default function AdminPage() {
                     {app.status}
                   </span>
 
-                                {app.status === 'pending' && (
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => updateStatus(app.id, 'approved', app.email, app.brand_name)}
-                                            className="bg-green-600 hover:bg-green-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            onClick={() => updateStatus(app.id, 'rejected', app.email, app.brand_name)}
-                                            className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-medium px-4 py-2 rounded-lg transition"
-                                        >
-                                            Reject
-                                        </button>
-                                    </div>
-                                )}
+                                    {app.status === 'pending' && (
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => updateStatus(app.id, 'approved', app.email, app.brand_name)}
+                                                className="bg-green-600 hover:bg-green-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+                                            >
+                                                Approve
+                                            </button>
+                                            <button
+                                                onClick={() => updateStatus(app.id, 'rejected', app.email, app.brand_name)}
+                                                className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-medium px-4 py-2 rounded-lg transition"
+                                            >
+                                                Reject
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
                         </div>
                         ))}
 
