@@ -283,7 +283,7 @@ export default function MerchantDashboard() {
                             >
                                 <div className="flex items-center gap-3">
                                     <div>
-                                        <p className="text-white text-sm font-medium">Messages</p>
+                                        <p className="text-white text-sm font-medium">Inbox</p>
                                         <p className="text-zinc-500 text-xs mt-0.5">Messages from CEO/$</p>
                                     </div>
                                 </div>
