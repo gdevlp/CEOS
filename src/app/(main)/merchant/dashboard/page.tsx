@@ -27,6 +27,8 @@ export default function MerchantDashboard() {
     })
     const [shopHandle, setShopHandle] = useState<string | null>(null)
     const [plan, setPlan] = useState<string>('none')
+    const [unreadMessages, setUnreadMessages] = useState(0)
+    const [openTickets, setOpenTickets] = useState(0)
 
     const loadStats = useCallback(async (userId: string) => {
         const { data: shop } = await supabase
@@ -74,6 +76,22 @@ export default function MerchantDashboard() {
             .eq('shop_id', shop.id)
 
         setTotalProducts(count || 0)
+
+        const { count: msgCount } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('merchant_id', userId)
+            .eq('read', false)
+
+        setUnreadMessages(msgCount || 0)
+
+        const { count: ticketCount } = await supabase
+            .from('tickets')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('status', 'open')
+
+        setOpenTickets(ticketCount || 0)
     }, [])
 
     const checkUser = useCallback(async () => {
@@ -283,9 +301,14 @@ export default function MerchantDashboard() {
                             >
                                 <div className="flex items-center gap-3">
                                     <div>
-                                        <p className="text-white text-sm font-medium">Inbox</p>
+                                        <p className="text-white text-sm font-medium">Messages</p>
                                         <p className="text-zinc-500 text-xs mt-0.5">Messages from CEO/$</p>
                                     </div>
+                                    {unreadMessages > 0 && (
+                                        <span className="bg-green-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                      {unreadMessages}
+                    </span>
+                                    )}
                                 </div>
                                 <span className="text-zinc-600 group-hover:text-green-500 transition text-lg">→</span>
                             </Link>
@@ -294,9 +317,16 @@ export default function MerchantDashboard() {
                                 href="/merchant/support"
                                 className="flex items-center justify-between p-4 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition group"
                             >
-                                <div>
-                                    <p className="text-white text-sm font-medium">Support</p>
-                                    <p className="text-zinc-500 text-xs mt-0.5">Get help from CEO/$</p>
+                                <div className="flex items-center gap-3">
+                                    <div>
+                                        <p className="text-white text-sm font-medium">Support</p>
+                                        <p className="text-zinc-500 text-xs mt-0.5">Get help from CEO/$</p>
+                                    </div>
+                                    {openTickets > 0 && (
+                                        <span className="bg-yellow-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                      {openTickets}
+                    </span>
+                                    )}
                                 </div>
                                 <span className="text-zinc-600 group-hover:text-green-500 transition text-lg">→</span>
                             </Link>

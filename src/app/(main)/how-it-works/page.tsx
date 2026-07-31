@@ -99,7 +99,7 @@ export default function HowItWorksPage() {
                             <div className="sm:col-span-11">
                                 <h3 className="text-white font-bold text-xl mb-2">Discover brands</h3>
                                 <p className="text-zinc-400 leading-relaxed mb-4">
-                                    Browse the CEO/$ marketplace to find independent brands across streetwear, accessories, art, jewelry, and more. Every brand on the platform has been personally reviewed and approved — no mass-produced generic products.
+                                    Browse the CEO/$ marketplace to find brands across streetwear, casual, formal, outerwear, and more. Every brand on the platform has been personally reviewed and approved — no mass-produced generic products.
                                 </p>
                                 <Link href="/marketplace" className="text-green-500 text-sm hover:text-green-500 transition font-medium">
                                     Browse the marketplace →

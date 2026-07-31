@@ -49,8 +49,8 @@ export async function POST(request: Request) {
              style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
             Set up my shop
           </a>
-          <p style="color: #999; font-size: 12px;">If you didn't apply to CEO/$, you can ignore this email.</p>
-        </div>
+          <p style="color: #999; font-size: 12px; margin-top: 16px;">Already set up your account? <a href="${process.env.NEXT_PUBLIC_APP_URL}/merchant/login" style="color: #16a34a;">Sign in here</a></p>
+          <p style="color: #999; font-size: 12px; margin-top: 8px;">If you didn't apply to CEO/$, you can ignore this email.</p>        </div>
       `,
         })
 

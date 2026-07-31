@@ -123,9 +123,11 @@ export default function ApplyPage() {
                         >
                             <option value="">Select a category</option>
                             <option value="Streetwear">Streetwear</option>
-                            <option value="Casual">Casual</option>
-                            <option value="Sportswear">Sportswear</option>
-                            <option value="Professional">Professional</option>
+                            <option value="Athletic">Athletic</option>
+                            <option value="Formal/Business">Formal/Business</option>
+                            <option value="Luxury">Luxury</option>
+                            <option value="Outerwear">Outerwear</option>
+                            <option value="Lounge">Lounge</option>
                             <option value="Accessories">Accessories</option>
                             <option value="Other">Other</option>
                         </select>
