@@ -1,14 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import { UploadButton } from '@/lib/uploadthing'
 import Image from 'next/image'
+import { supabase } from '@/lib/supabase'
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 export default function NewProductPage() {
     const [shopId, setShopId] = useState<string | null>(null)

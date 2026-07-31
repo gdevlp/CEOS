@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
@@ -9,12 +10,6 @@ export async function GET(request: Request) {
     console.log('Callback params:', { token_hash, type, code })
 
     if (token_hash && type) {
-        const { createClient } = await import('@supabase/supabase-js')
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        )
-
         const { error } = await supabase.auth.verifyOtp({
             type: type as 'invite' | 'email' | 'magiclink' | 'recovery' | 'email_change',
             token_hash,
@@ -23,10 +18,10 @@ export async function GET(request: Request) {
         console.log('Verify OTP error:', error)
 
         if (!error) {
-            return NextResponse.redirect(`${origin}//merchant/setup`)
+            return NextResponse.redirect(`${origin}/merchant/setup`)
         }
     }
 
     console.log('Falling back to login')
-    return NextResponse.redirect(`${origin}//merchant/login`)
+    return NextResponse.redirect(`${origin}/merchant/login`)
 }
