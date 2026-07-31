@@ -3,12 +3,7 @@
 import Link from 'next/link'
 import { useCart } from '@/components/CartContext'
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { supabase } from '@/lib/supabase'
 
 export default function Nav() {
     const { totalItems } = useCart()
@@ -27,7 +22,7 @@ export default function Nav() {
                 .from('merchants')
                 .select('id')
                 .eq('id', session.user.id)
-                .single()
+                .maybeSingle()
 
             if (merchant) {
                 setUserType('merchant')
@@ -38,9 +33,7 @@ export default function Nav() {
                 .from('shoppers')
                 .select('id')
                 .eq('auth_id', session.user.id)
-                .single()
-
-            console.log('Shopper check:', shopper, session.user.id)
+                .maybeSingle()
 
             if (shopper) {
                 setUserType('shopper')
