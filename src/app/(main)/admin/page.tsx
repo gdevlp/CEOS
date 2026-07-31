@@ -145,7 +145,6 @@ export default function AdminPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 merchantId: messageModal.merchantId,
-                email: messageModal.email,
                 subject: messageSubject,
                 body: messageBody,
             }),
