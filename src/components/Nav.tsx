@@ -86,16 +86,20 @@ export default function Nav() {
                         Apply
                     </Link>
 
-                    {/* Account icon on desktop */}
-                    <Link href={accountHref} className="text-zinc-400 hover:text-green-500 transition flex items-center gap-1.5">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        {user && (
+                    {/* Account - shows Sign in when logged out, icon when logged in */}
+                    {user ? (
+                        <Link href={accountHref} className="text-zinc-400 hover:text-green-500 transition flex items-center gap-1.5">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
                             <span className="w-2 h-2 rounded-full bg-green-500" />
-                        )}
-                    </Link>
+                        </Link>
+                    ) : (
+                        <Link href="/sign-in" className="text-zinc-400 text-sm hover:text-green-500 transition">
+                            Sign in
+                        </Link>
+                    )}
 
                     {/* Cart */}
                     <Link href="/cart" className="relative flex items-center text-zinc-400 hover:text-green-500 transition">
