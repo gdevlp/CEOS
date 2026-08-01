@@ -125,6 +125,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [])
 
     async function syncToDatabase(userId: string, cartItems: CartItem[]) {
+        console.log('syncToDatabase called with', cartItems.length, 'items for user', userId)
+
         await supabase
             .from('cart_items')
             .delete()
