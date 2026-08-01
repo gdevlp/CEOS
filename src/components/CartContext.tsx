@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { supabase } from '@/lib/supabase'
 
 export type CartItem = {
     productId: string
@@ -25,21 +26,135 @@ const CartContext = createContext<CartContextType | null>(null)
 
 export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([])
+    const [shopperId, setShopperId] = useState<string | null>(null)
 
+    // Load cart on mount
     useEffect(() => {
-        const stored = localStorage.getItem('ceodollar-cart')
-        if (stored) {
-            try {
-                setItems(JSON.parse(stored))
-            } catch {
-                setItems([])
+        async function loadCart() {
+            const { data: { session } } = await supabase.auth.getSession()
+
+            if (session) {
+                setShopperId(session.user.id)
+                // Load from database
+                const { data: dbItems } = await supabase
+                    .from('cart_items')
+                    .select('*')
+                    .eq('shopper_id', session.user.id)
+
+                if (dbItems && dbItems.length > 0) {
+                    const cartItems: CartItem[] = dbItems.map(i => ({
+                        productId: i.product_id,
+                        shopId: i.shop_id,
+                        shopHandle: i.shop_handle,
+                        shopName: i.shop_name,
+                        name: i.name,
+                        price: i.price,
+                        quantity: i.quantity,
+                    }))
+
+                    // Merge with localStorage
+                    const stored = localStorage.getItem('ceodollar-cart')
+                    const localItems: CartItem[] = stored ? JSON.parse(stored) : []
+
+                    const merged = [...cartItems]
+                    localItems.forEach(localItem => {
+                        const exists = merged.find(i => i.productId === localItem.productId)
+                        if (!exists) merged.push(localItem)
+                    })
+
+                    setItems(merged)
+                    localStorage.removeItem('ceodollar-cart')
+                    return
+                }
+            }
+
+            // Load from localStorage if not signed in
+            const stored = localStorage.getItem('ceodollar-cart')
+            if (stored) {
+                try {
+                    setItems(JSON.parse(stored))
+                } catch {
+                    setItems([])
+                }
             }
         }
+
+        loadCart()
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                setShopperId(session.user.id)
+
+                const localStored = localStorage.getItem('ceodollar-cart')
+                const localItems: CartItem[] = localStored ? JSON.parse(localStored) : []
+
+                const { data: dbItems } = await supabase
+                    .from('cart_items')
+                    .select('*')
+                    .eq('shopper_id', session.user.id)
+
+                const dbCartItems: CartItem[] = (dbItems || []).map(i => ({
+                    productId: i.product_id,
+                    shopId: i.shop_id,
+                    shopHandle: i.shop_handle,
+                    shopName: i.shop_name,
+                    name: i.name,
+                    price: i.price,
+                    quantity: i.quantity,
+                }))
+
+                const merged = [...dbCartItems]
+                localItems.forEach(localItem => {
+                    const exists = merged.find(i => i.productId === localItem.productId)
+                    if (!exists) merged.push(localItem)
+                })
+
+                setItems(merged)
+                localStorage.removeItem('ceodollar-cart')
+            }
+
+            if (event === 'SIGNED_OUT') {
+                setShopperId(null)
+                setItems([])
+                localStorage.removeItem('ceodollar-cart')
+            }
+        })
+
+        return () => subscription.unsubscribe()
     }, [])
 
+    // Sync to database or localStorage when items change
     useEffect(() => {
-        localStorage.setItem('ceodollar-cart', JSON.stringify(items))
-    }, [items])
+        if (shopperId) {
+            syncToDatabase(shopperId, items)
+        } else {
+            localStorage.setItem('ceodollar-cart', JSON.stringify(items))
+        }
+    }, [items, shopperId])
+
+    async function syncToDatabase(userId: string, cartItems: CartItem[]) {
+        await supabase
+            .from('cart_items')
+            .delete()
+            .eq('shopper_id', userId)
+
+        if (cartItems.length > 0) {
+            await supabase
+                .from('cart_items')
+                .insert(
+                    cartItems.map(item => ({
+                        shopper_id: userId,
+                        product_id: item.productId,
+                        shop_id: item.shopId,
+                        shop_handle: item.shopHandle,
+                        shop_name: item.shopName,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                    }))
+                )
+        }
+    }
 
     function addItem(item: Omit<CartItem, 'quantity'>) {
         setItems(prev => {
