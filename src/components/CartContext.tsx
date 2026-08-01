@@ -123,15 +123,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe()
     }, [])
 
-    useEffect(() => {
-        if (!initialized) return
-        if (shopperId) {
-            void syncToDatabase(shopperId, items)
-        } else {
-            localStorage.setItem('ceodollar-cart', JSON.stringify(items))
-        }
-    }, [items, shopperId, initialized])
-
     async function syncToDatabase(userId: string, cartItems: CartItem[]) {
         await supabase
             .from('cart_items')
@@ -155,6 +146,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 )
         }
     }
+
+    useEffect(() => {
+        if (!initialized) return
+        if (shopperId) {
+            void syncToDatabase(shopperId, items)
+        } else {
+            localStorage.setItem('ceodollar-cart', JSON.stringify(items))
+        }
+    }, [items, shopperId, initialized])
 
     function addItem(item: Omit<CartItem, 'quantity'>) {
         setItems(prev => {
