@@ -114,6 +114,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }
 
             if (event === 'SIGNED_OUT') {
+                setInitialized(false)
                 setShopperId(null)
                 setItems([])
                 localStorage.removeItem('ceodollar-cart')
