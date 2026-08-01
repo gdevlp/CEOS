@@ -27,15 +27,15 @@ const CartContext = createContext<CartContextType | null>(null)
 export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([])
     const [shopperId, setShopperId] = useState<string | null>(null)
+    const [initialized, setInitialized] = useState(false)
 
-    // Load cart on mount
     useEffect(() => {
         async function loadCart() {
             const { data: { session } } = await supabase.auth.getSession()
 
             if (session) {
                 setShopperId(session.user.id)
-                // Load from database
+
                 const { data: dbItems } = await supabase
                     .from('cart_items')
                     .select('*')
@@ -52,7 +52,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         quantity: i.quantity,
                     }))
 
-                    // Merge with localStorage
                     const stored = localStorage.getItem('ceodollar-cart')
                     const localItems: CartItem[] = stored ? JSON.parse(stored) : []
 
@@ -63,12 +62,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     })
 
                     setItems(merged)
+                    setInitialized(true)
                     localStorage.removeItem('ceodollar-cart')
                     return
                 }
             }
 
-            // Load from localStorage if not signed in
             const stored = localStorage.getItem('ceodollar-cart')
             if (stored) {
                 try {
@@ -77,9 +76,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     setItems([])
                 }
             }
+            setInitialized(true)
         }
 
-        loadCart()
+        void loadCart()
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
@@ -123,14 +123,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe()
     }, [])
 
-    // Sync to database or localStorage when items change
     useEffect(() => {
+        if (!initialized) return
         if (shopperId) {
-            syncToDatabase(shopperId, items)
+            void syncToDatabase(shopperId, items)
         } else {
             localStorage.setItem('ceodollar-cart', JSON.stringify(items))
         }
-    }, [items, shopperId])
+    }, [items, shopperId, initialized])
 
     async function syncToDatabase(userId: string, cartItems: CartItem[]) {
         await supabase
