@@ -125,29 +125,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [])
 
     async function syncToDatabase(userId: string, cartItems: CartItem[]) {
-        console.log('syncToDatabase called with', cartItems.length, 'items for user', userId)
-
-        await supabase
-            .from('cart_items')
-            .delete()
-            .eq('shopper_id', userId)
-
-        if (cartItems.length > 0) {
-            await supabase
-                .from('cart_items')
-                .insert(
-                    cartItems.map(item => ({
-                        shopper_id: userId,
-                        product_id: item.productId,
-                        shop_id: item.shopId,
-                        shop_handle: item.shopHandle,
-                        shop_name: item.shopName,
-                        name: item.name,
-                        price: item.price,
-                        quantity: item.quantity,
-                    }))
-                )
-        }
+        await fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, items: cartItems }),
+        })
     }
 
     useEffect(() => {
