@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react'
 import { supabase } from '@/lib/supabase'
 
 export type CartItem = {
@@ -28,6 +28,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([])
     const [shopperId, setShopperId] = useState<string | null>(null)
     const [initialized, setInitialized] = useState(false)
+    const signingOut = useRef(false)
+
+    async function syncToDatabase(userId: string, cartItems: CartItem[]) {
+        if (!userId || signingOut.current) return
+        await fetch(`${window.location.origin}/api/cart`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, items: cartItems }),
+        })
+    }
 
     useEffect(() => {
         async function loadCart() {
@@ -83,19 +93,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
+                signingOut.current = false
                 setShopperId(session.user.id)
-                console.log('SIGNED_IN event fired for:', session.user.id)
 
                 const localStored = localStorage.getItem('ceodollar-cart')
                 const localItems: CartItem[] = localStored ? JSON.parse(localStored) : []
-                console.log('Local items:', localItems.length)
 
-                const { data: dbItems, error: dbError } = await supabase
+                const { data: dbItems } = await supabase
                     .from('cart_items')
                     .select('*')
                     .eq('shopper_id', session.user.id)
-
-                console.log('DB items:', dbItems?.length, 'Error:', dbError)
 
                 const dbCartItems: CartItem[] = (dbItems || []).map(i => ({
                     productId: i.product_id,
@@ -118,6 +125,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }
 
             if (event === 'SIGNED_OUT') {
+                signingOut.current = true
                 setInitialized(false)
                 setShopperId(null)
                 setItems([])
@@ -128,17 +136,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe()
     }, [])
 
-    async function syncToDatabase(userId: string, cartItems: CartItem[]) {
-        if (!userId) return
-        await fetch(`${window.location.origin}/api/cart`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, items: cartItems }),
-        })
-    }
-
     useEffect(() => {
-        if (!initialized) return
+        if (!initialized || signingOut.current) return
         if (shopperId) {
             void syncToDatabase(shopperId, items)
         } else {
