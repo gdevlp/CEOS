@@ -7,8 +7,18 @@ const supabaseAdmin = createClient(
 )
 
 export async function POST(request: Request) {
-    const { userId, items } = await request.json()
+    let userId, items
+    try {
+        const body = await request.json()
+        userId = body.userId
+        items = body.items
+    } catch {
+        return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    }
 
+    if (!userId || !items) {
+        return NextResponse.json({ error: 'Missing userId or items' }, { status: 400 })
+    }
     try {
         await supabaseAdmin
             .from('cart_items')

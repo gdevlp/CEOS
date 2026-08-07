@@ -125,6 +125,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [])
 
     async function syncToDatabase(userId: string, cartItems: CartItem[]) {
+        if (!userId) return
         await fetch('/api/cart', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
