@@ -84,14 +84,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
                 setShopperId(session.user.id)
+                console.log('SIGNED_IN event fired for:', session.user.id)
 
                 const localStored = localStorage.getItem('ceodollar-cart')
                 const localItems: CartItem[] = localStored ? JSON.parse(localStored) : []
+                console.log('Local items:', localItems.length)
 
-                const { data: dbItems } = await supabase
+                const { data: dbItems, error: dbError } = await supabase
                     .from('cart_items')
                     .select('*')
                     .eq('shopper_id', session.user.id)
+
+                console.log('DB items:', dbItems?.length, 'Error:', dbError)
 
                 const dbCartItems: CartItem[] = (dbItems || []).map(i => ({
                     productId: i.product_id,
