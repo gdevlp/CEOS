@@ -26,58 +26,24 @@ const CartContext = createContext<CartContextType | null>(null)
 
 export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([])
-    const [shopperId, setShopperId] = useState<string | null>(null)
-    const [initialized, setInitialized] = useState(false)
-    const signingOut = useRef(false)
+    const shopperIdRef = useRef<string | null>(null)
+    const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-    async function syncToDatabase(userId: string, cartItems: CartItem[]) {
-        if (!userId || signingOut.current) return
-        await fetch(`${window.location.origin}/api/cart`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, items: cartItems }),
-        })
-    }
-
+    // Load cart on mount
     useEffect(() => {
-        async function loadCart() {
+        async function init() {
             const { data: { session } } = await supabase.auth.getSession()
 
             if (session) {
-                setShopperId(session.user.id)
-
-                const { data: dbItems } = await supabase
-                    .from('cart_items')
-                    .select('*')
-                    .eq('shopper_id', session.user.id)
-
-                if (dbItems && dbItems.length > 0) {
-                    const cartItems: CartItem[] = dbItems.map(i => ({
-                        productId: i.product_id,
-                        shopId: i.shop_id,
-                        shopHandle: i.shop_handle,
-                        shopName: i.shop_name,
-                        name: i.name,
-                        price: i.price,
-                        quantity: i.quantity,
-                    }))
-
-                    const stored = localStorage.getItem('ceodollar-cart')
-                    const localItems: CartItem[] = stored ? JSON.parse(stored) : []
-
-                    const merged = [...cartItems]
-                    localItems.forEach(localItem => {
-                        const exists = merged.find(i => i.productId === localItem.productId)
-                        if (!exists) merged.push(localItem)
-                    })
-
-                    setItems(merged)
-                    setInitialized(true)
-                    localStorage.removeItem('ceodollar-cart')
+                shopperIdRef.current = session.user.id
+                const dbItems = await loadFromDatabase(session.user.id)
+                if (dbItems.length > 0) {
+                    setItems(dbItems)
                     return
                 }
             }
 
+            // Fall back to localStorage
             const stored = localStorage.getItem('ceodollar-cart')
             if (stored) {
                 try {
@@ -86,48 +52,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     setItems([])
                 }
             }
-            setInitialized(true)
         }
 
-        void loadCart()
+        void init()
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
-                signingOut.current = false
-                setShopperId(session.user.id)
+                shopperIdRef.current = session.user.id
+                const dbItems = await loadFromDatabase(session.user.id)
 
-                const localStored = localStorage.getItem('ceodollar-cart')
-                const localItems: CartItem[] = localStored ? JSON.parse(localStored) : []
-
-                const { data: dbItems } = await supabase
-                    .from('cart_items')
-                    .select('*')
-                    .eq('shopper_id', session.user.id)
-
-                const dbCartItems: CartItem[] = (dbItems || []).map(i => ({
-                    productId: i.product_id,
-                    shopId: i.shop_id,
-                    shopHandle: i.shop_handle,
-                    shopName: i.shop_name,
-                    name: i.name,
-                    price: i.price,
-                    quantity: i.quantity,
-                }))
-
-                const merged = [...dbCartItems]
-                localItems.forEach(localItem => {
-                    const exists = merged.find(i => i.productId === localItem.productId)
-                    if (!exists) merged.push(localItem)
-                })
-
-                setItems(merged)
+                if (dbItems.length > 0) {
+                    setItems(dbItems)
+                } else {
+                    // Migrate localStorage cart to database
+                    const stored = localStorage.getItem('ceodollar-cart')
+                    if (stored) {
+                        try {
+                            const localItems = JSON.parse(stored)
+                            if (localItems.length > 0) {
+                                setItems(localItems)
+                                await saveToDatabase(session.user.id, localItems)
+                            }
+                        } catch {
+                            // ignore
+                        }
+                    }
+                }
                 localStorage.removeItem('ceodollar-cart')
             }
 
             if (event === 'SIGNED_OUT') {
-                signingOut.current = true
-                setInitialized(false)
-                setShopperId(null)
+                shopperIdRef.current = null
                 setItems([])
                 localStorage.removeItem('ceodollar-cart')
             }
@@ -136,31 +91,67 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return () => subscription.unsubscribe()
     }, [])
 
-    useEffect(() => {
-        if (!initialized || signingOut.current) return
-        if (shopperId) {
-            void syncToDatabase(shopperId, items)
-        } else {
-            localStorage.setItem('ceodollar-cart', JSON.stringify(items))
+    async function loadFromDatabase(userId: string): Promise<CartItem[]> {
+        const { data } = await supabase
+            .from('cart_items')
+            .select('*')
+            .eq('shopper_id', userId)
+
+        if (!data || data.length === 0) return []
+
+        return data.map(i => ({
+            productId: i.product_id,
+            shopId: i.shop_id,
+            shopHandle: i.shop_handle,
+            shopName: i.shop_name,
+            name: i.name,
+            price: i.price,
+            quantity: i.quantity,
+        }))
+    }
+
+    async function saveToDatabase(userId: string, cartItems: CartItem[]) {
+        try {
+            const res = await fetch(`${window.location.origin}/api/cart`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, items: cartItems }),
+            })
+            if (!res.ok) console.log('Cart save failed:', await res.text())
+        } catch (err) {
+            console.log('Cart save error:', err)
         }
-    }, [items, shopperId, initialized])
+    }
+
+    function scheduleSync(newItems: CartItem[]) {
+        if (syncTimer.current) clearTimeout(syncTimer.current)
+
+        if (shopperIdRef.current) {
+            syncTimer.current = setTimeout(() => {
+                void saveToDatabase(shopperIdRef.current!, newItems)
+            }, 800)
+        } else {
+            localStorage.setItem('ceodollar-cart', JSON.stringify(newItems))
+        }
+    }
 
     function addItem(item: Omit<CartItem, 'quantity'>) {
         setItems(prev => {
             const existing = prev.find(i => i.productId === item.productId)
-            if (existing) {
-                return prev.map(i =>
-                    i.productId === item.productId
-                        ? { ...i, quantity: i.quantity + 1 }
-                        : i
-                )
-            }
-            return [...prev, { ...item, quantity: 1 }]
+            const newItems = existing
+                ? prev.map(i => i.productId === item.productId ? { ...i, quantity: i.quantity + 1 } : i)
+                : [...prev, { ...item, quantity: 1 }]
+            scheduleSync(newItems)
+            return newItems
         })
     }
 
     function removeItem(productId: string) {
-        setItems(prev => prev.filter(i => i.productId !== productId))
+        setItems(prev => {
+            const newItems = prev.filter(i => i.productId !== productId)
+            scheduleSync(newItems)
+            return newItems
+        })
     }
 
     function updateQuantity(productId: string, quantity: number) {
@@ -168,13 +159,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
             removeItem(productId)
             return
         }
-        setItems(prev =>
-            prev.map(i => i.productId === productId ? { ...i, quantity } : i)
-        )
+        setItems(prev => {
+            const newItems = prev.map(i => i.productId === productId ? { ...i, quantity } : i)
+            scheduleSync(newItems)
+            return newItems
+        })
     }
 
     function clearShop(shopId: string) {
-        setItems(prev => prev.filter(i => i.shopId !== shopId))
+        setItems(prev => {
+            const newItems = prev.filter(i => i.shopId !== shopId)
+            scheduleSync(newItems)
+            return newItems
+        })
     }
 
     const totalItems = items.reduce((sum, i) => sum + i.quantity, 0)
