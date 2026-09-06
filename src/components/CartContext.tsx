@@ -29,68 +29,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const shopperIdRef = useRef<string | null>(null)
     const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-    // Load cart on mount
-    useEffect(() => {
-        async function init() {
-            const { data: { session } } = await supabase.auth.getSession()
-
-            if (session) {
-                shopperIdRef.current = session.user.id
-                const dbItems = await loadFromDatabase(session.user.id)
-                if (dbItems.length > 0) {
-                    setItems(dbItems)
-                    return
-                }
-            }
-
-            // Fall back to localStorage
-            const stored = localStorage.getItem('ceodollar-cart')
-            if (stored) {
-                try {
-                    setItems(JSON.parse(stored))
-                } catch {
-                    setItems([])
-                }
-            }
-        }
-
-        void init()
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                shopperIdRef.current = session.user.id
-                const dbItems = await loadFromDatabase(session.user.id)
-
-                if (dbItems.length > 0) {
-                    setItems(dbItems)
-                } else {
-                    // Migrate localStorage cart to database
-                    const stored = localStorage.getItem('ceodollar-cart')
-                    if (stored) {
-                        try {
-                            const localItems = JSON.parse(stored)
-                            if (localItems.length > 0) {
-                                setItems(localItems)
-                                await saveToDatabase(session.user.id, localItems)
-                            }
-                        } catch {
-                            // ignore
-                        }
-                    }
-                }
-                localStorage.removeItem('ceodollar-cart')
-            }
-
-            if (event === 'SIGNED_OUT') {
-                shopperIdRef.current = null
-                setItems([])
-                localStorage.removeItem('ceodollar-cart')
-            }
-        })
-
-        return () => subscription.unsubscribe()
-    }, [])
-
     async function loadFromDatabase(userId: string): Promise<CartItem[]> {
         const { data } = await supabase
             .from('cart_items')
@@ -134,6 +72,65 @@ export function CartProvider({ children }: { children: ReactNode }) {
             localStorage.setItem('ceodollar-cart', JSON.stringify(newItems))
         }
     }
+
+    useEffect(() => {
+        async function init() {
+            const { data: { session } } = await supabase.auth.getSession()
+
+            if (session) {
+                shopperIdRef.current = session.user.id
+                const dbItems = await loadFromDatabase(session.user.id)
+                if (dbItems.length > 0) {
+                    setItems(dbItems)
+                    return
+                }
+            }
+
+            const stored = localStorage.getItem('ceodollar-cart')
+            if (stored) {
+                try {
+                    setItems(JSON.parse(stored))
+                } catch {
+                    setItems([])
+                }
+            }
+        }
+
+        void init()
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                shopperIdRef.current = session.user.id
+                const dbItems = await loadFromDatabase(session.user.id)
+
+                if (dbItems.length > 0) {
+                    setItems(dbItems)
+                } else {
+                    const stored = localStorage.getItem('ceodollar-cart')
+                    if (stored) {
+                        try {
+                            const localItems = JSON.parse(stored)
+                            if (localItems.length > 0) {
+                                setItems(localItems)
+                                await saveToDatabase(session.user.id, localItems)
+                            }
+                        } catch {
+                            // ignore
+                        }
+                    }
+                }
+                localStorage.removeItem('ceodollar-cart')
+            }
+
+            if (event === 'SIGNED_OUT') {
+                shopperIdRef.current = null
+                setItems([])
+                localStorage.removeItem('ceodollar-cart')
+            }
+        })
+
+        return () => subscription.unsubscribe()
+    }, [])
 
     function addItem(item: Omit<CartItem, 'quantity'>) {
         setItems(prev => {
