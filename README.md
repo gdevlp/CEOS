@@ -92,4 +92,4 @@ Proprietary — all rights reserved. This is an independent project in active de
 
 ## Contact
 
-Built by [Gary Wilson](https://github.com/gdevlp) — [gkw35@cornell.edu](mailto:gkw35@cornell.edu)
+Built by [Gary Wilson](https://github.com/gdevlp) — [gdevlpint@gmail.com](mailto:gdevlpint@gmail.com)
