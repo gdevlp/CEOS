@@ -1,0 +1,168 @@
+{
+  "name": "Order",
+  "type": "object",
+  "properties": {
+    "checkout_group_id": {
+      "type": "string",
+      "description": "Links the per-brand sub-orders placed in one checkout"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "The brand fulfilling this sub-order"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "brand_owner_id": {
+      "type": "string",
+      "description": "User id of the founder who fulfils this sub-order"
+    },
+    "buyer_name": {
+      "type": "string"
+    },
+    "buyer_email": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "description": "The colour the shopper chose"
+          },
+          "size": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Line items in this sub-order"
+    },
+    "subtotal": {
+      "type": "number"
+    },
+    "shipping_cost": {
+      "type": "number"
+    },
+    "total": {
+      "type": "number"
+    },
+    "shipping_address": {
+      "type": "string",
+      "description": "Formatted shipping address"
+    },
+    "note": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "placed",
+        "shipped",
+        "fulfilled",
+        "cancelled"
+      ],
+      "default": "placed"
+    },
+    "carrier": {
+      "type": "string",
+      "description": "Key of the carrier the founder shipped with"
+    },
+    "tracking_number": {
+      "type": "string",
+      "description": "Carrier tracking number. Required before an order can be marked shipped."
+    },
+    "tracking_url": {
+      "type": "string",
+      "description": "The carrier's tracking page for this number"
+    },
+    "shipped_at": {
+      "type": "string",
+      "description": "When the founder marked this sub-order shipped"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "unpaid",
+        "paid"
+      ],
+      "default": "unpaid"
+    },
+    "placed_at": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "description": "Which CEO/$ surface sent the shopper who placed this sub-order"
+    },
+    "fee_rate": {
+      "type": "number",
+      "description": "The brand's platform fee percentage at the time of the order"
+    },
+    "fee_amount": {
+      "type": "number",
+      "description": "What the platform takes from this sub-order's subtotal"
+    },
+    "processing_fee": {
+      "type": "number",
+      "description": "Card processing cost allocated to this sub-order. Recorded separately so it can be deducted from the brand's payout later; nothing is deducted yet."
+    }
+  },
+  "required": [
+    "brand_id",
+    "total"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.brand_owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.brand_owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

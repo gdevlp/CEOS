@@ -1,0 +1,146 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "brand_id": {
+      "type": "string",
+      "description": "The Brand this product belongs to"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name, stored alongside the product for listings"
+    },
+    "brand_owner_id": {
+      "type": "string",
+      "description": "User id of the founder who owns the brand"
+    },
+    "title": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description, materials and fit"
+    },
+    "category": {
+      "type": "string",
+      "description": "Product category"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price in USD"
+    },
+    "sizes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Available sizes"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Product image URLs"
+    },
+    "colorways": {
+      "type": "array",
+      "description": "Colours inside this product. One product stays one live piece however many colours it has. Products without colourways are read as a single default colour.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Colour name, e.g. Black"
+          },
+          "swatch": {
+            "type": "string",
+            "description": "Optional swatch colour, as a hex value"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Photos shown when this colour is selected"
+          },
+          "sizes": {
+            "type": "array",
+            "description": "Sizes offered in this colour, each with a stock count",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "stock": {
+                  "type": "number",
+                  "description": "Units on hand. Empty means made-to-order and always available."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "published",
+      "description": "Published products are visible in the marketplace"
+    }
+  },
+  "required": [
+    "title",
+    "price",
+    "brand_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

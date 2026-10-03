@@ -1,0 +1,55 @@
+{
+  "name": "ProductView",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "description": "The product that was viewed"
+    },
+    "product_title": {
+      "type": "string",
+      "description": "Product title, stored alongside the view for reporting"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "The brand the viewed product belongs to"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "brand_owner_id": {
+      "type": "string",
+      "description": "User id of the founder who owns the brand"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "marketplace",
+        "brand_store",
+        "brands",
+        "share",
+        "direct"
+      ],
+      "default": "direct",
+      "description": "Which CEO/$ surface sent the shopper"
+    }
+  },
+  "required": [
+    "product_id",
+    "brand_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.brand_owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

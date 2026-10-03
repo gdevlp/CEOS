@@ -1,0 +1,259 @@
+{
+  "name": "Brand",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "One-line description of the brand"
+    },
+    "description": {
+      "type": "string",
+      "description": "The brand story and what makes it different"
+    },
+    "category": {
+      "type": "string",
+      "description": "Primary product category"
+    },
+    "website": {
+      "type": "string"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "tiktok": {
+      "type": "string"
+    },
+    "sample_images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Sample product or campaign image URLs"
+    },
+    "owner_name": {
+      "type": "string",
+      "description": "Name of the founder who applied"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Email used for application status updates"
+    },
+    "country": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "in_review",
+        "approved",
+        "declined"
+      ],
+      "default": "submitted"
+    },
+    "review_note": {
+      "type": "string",
+      "description": "Admin note, shared with the founder if the application is declined"
+    },
+    "submitted_at": {
+      "type": "string",
+      "description": "When the application was last submitted"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "description": "When the admin last changed the status"
+    },
+    "setup_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Setup checklist steps the founder has marked complete"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "entry",
+        "growth"
+      ],
+      "default": "entry",
+      "description": "The subscription tier this brand is on"
+    },
+    "stripe_customer_id": {
+      "type": "string",
+      "description": "Stripe customer id used for this brand's subscription"
+    },
+    "stripe_subscription_id": {
+      "type": "string",
+      "description": "Stripe subscription id for the active billing period"
+    },
+    "subscription_price_id": {
+      "type": "string",
+      "description": "Stripe price id the subscription is billed at"
+    },
+    "subscription_status": {
+      "type": "string",
+      "enum": [
+        "inactive",
+        "active",
+        "trialing",
+        "past_due",
+        "canceled"
+      ],
+      "default": "inactive",
+      "description": "Current state of the recurring subscription"
+    },
+    "current_period_end": {
+      "type": "string",
+      "description": "When the current billing period ends"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Storefront logo image URL"
+    },
+    "banner_url": {
+      "type": "string",
+      "description": "Storefront banner or cover image URL"
+    },
+    "story": {
+      "type": "string",
+      "description": "The brand story shown on the storefront"
+    },
+    "announcement": {
+      "type": "string",
+      "description": "One-line announcement bar shown across the top of the storefront"
+    },
+    "accent": {
+      "type": "string",
+      "description": "Key of the chosen accent colour from the curated palette"
+    },
+    "font_pair": {
+      "type": "string",
+      "description": "Key of the chosen type pairing from the approved set"
+    },
+    "grid_layout": {
+      "type": "string",
+      "description": "Key of the chosen product grid layout"
+    },
+    "banner_style": {
+      "type": "string",
+      "description": "Key of the chosen banner style"
+    },
+    "featured_product_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Products spotlighted at the top of the storefront, in order"
+    },
+    "founder_photo_url": {
+      "type": "string",
+      "description": "Founder portrait shown on the storefront"
+    },
+    "founder_message": {
+      "type": "string",
+      "description": "A short word from the founder"
+    },
+    "shipping_policy": {
+      "type": "string",
+      "description": "Shipping policy shown on the storefront"
+    },
+    "return_policy": {
+      "type": "string",
+      "description": "Returns policy shown on the storefront"
+    },
+    "shipping_mode": {
+      "type": "string",
+      "enum": [
+        "flat",
+        "free",
+        "free_over"
+      ],
+      "default": "free_over",
+      "description": "How this brand charges delivery: a flat rate, always free, or free above a set amount"
+    },
+    "shipping_flat": {
+      "type": "number",
+      "default": 12,
+      "description": "The delivery charge a shopper pays on this brand's sub-order"
+    },
+    "shipping_free_over": {
+      "type": "number",
+      "default": 250,
+      "description": "Order value at or above which this brand ships free"
+    },
+    "storefront_published_at": {
+      "type": "string",
+      "description": "When the founder last published storefront changes"
+    },
+    "setup_complete_email_sent_at": {
+      "type": "string",
+      "description": "When the founder was emailed that their storefront setup is complete"
+    },
+    "vacation_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "While on, the storefront shows the founder's away note and the brand drops out of the marketplace and the brands directory"
+    },
+    "vacation_message": {
+      "type": "string",
+      "description": "The away note shown on the storefront while vacation mode is on"
+    },
+    "listed_publicly": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this brand appears in the marketplace and the brands directory. Off means only a direct link reaches the store"
+    },
+    "default_carrier": {
+      "type": "string",
+      "default": "usps",
+      "description": "Carrier pre-selected when the founder marks an order shipped"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "approved"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
